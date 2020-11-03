@@ -1,0 +1,79 @@
+#main-add-analysis-container {
+  width: 80%;
+  height: 90%;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 40px;
+  box-shadow: -2px -2px 6px rgba(255, 255, 255, 0.1),
+    2px 2px 6px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#main-add-analysis-container h1 {
+  color: white;
+  margin-top: 20px;
+}
+
+#steelgrade-selection-container {
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.8);
+  margin-top: 10px;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 10px;
+}
+
+#element-analysis-container {
+  width: 80%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.8);
+  margin-top: 10px;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#weight-input {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.8);
+  padding: 15px 20px;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#weight-input::placeholder {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+#save-analysis {
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: -2px -2px 6px rgba(255, 255, 255, 0.1),
+    2px 2px 6px rgba(0, 0, 0, 0.8);
+  border: none;
+  outline: none;
+  padding: 20px;
+  border-radius: 15px;
+  color: white;
+  font-size: 1em;
+}
+
+#save-analysis:hover {
+  cursor: pointer;
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.8);
+}

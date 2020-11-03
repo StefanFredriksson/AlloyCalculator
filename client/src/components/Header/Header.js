@@ -31,7 +31,7 @@ export default function Header () {
         <div className='dropdown'>
           <span>Analysis</span>
           <div className='dropdown-content'>
-            <Link to='#' className='dropdown-link'>
+            <Link to='/analysis/add' className='dropdown-link'>
               Add analysis
             </Link>
             <Link to='#' className='dropdown-link'>
