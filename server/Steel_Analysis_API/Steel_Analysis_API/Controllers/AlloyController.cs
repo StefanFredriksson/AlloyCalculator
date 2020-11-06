@@ -16,8 +16,8 @@ namespace Steel_Analysis_API.Controllers
     [ApiController]
     public class AlloyController : ControllerBase
     {
-        private MySqlConnection con = null;
-        private MySqlCommand cmd = null;
+        private static MySqlConnection con = null;
+        private static MySqlCommand cmd = null;
 
         public AlloyController(IConfiguration config)
         {
@@ -27,24 +27,8 @@ namespace Steel_Analysis_API.Controllers
         [HttpGet]
         public String Get()
         {
-            con.Open();
-            cmd = new MySqlCommand("select name, price, elements from alloys", con);
-            MySqlDataReader reader = cmd.ExecuteReader();
-            List<Alloy> alloys = new List<Alloy>();
-
-            while (reader.Read())
-            {
-                List<AlloyElement> elements = JsonConvert.DeserializeObject<IEnumerable<AlloyElement>>((string)reader[2]) as List<AlloyElement>;
-                string name = (string)reader[0];
-                double price = Double.Parse((string)reader[1]);
-                alloys.Add(new Alloy(name, elements, price));
-            }
-
+            List<Alloy> alloys = GetAlloys(con, cmd);
             string json = JsonConvert.SerializeObject(alloys);
-
-            reader.Close();
-            cmd.Dispose();
-            con.Close();
 
             return json;
         }
@@ -61,6 +45,31 @@ namespace Steel_Analysis_API.Controllers
             con.Close();
 
             return "OK!";
+        }
+
+        public static List<Alloy> GetAlloys(MySqlConnection con, MySqlCommand cmd)
+        {
+            if (con == null || con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
+            cmd = new MySqlCommand("select name, price, elements from alloys", con);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            List<Alloy> alloys = new List<Alloy>();
+
+            while (reader.Read())
+            {
+                List<AlloyElement> elements = JsonConvert.DeserializeObject<IEnumerable<AlloyElement>>((string)reader[2]) as List<AlloyElement>;
+                string name = (string)reader[0];
+                double price = Double.Parse((string)reader[1]);
+                alloys.Add(new Alloy(name, elements, price));
+            }
+
+            reader.Close();
+            cmd.Dispose();
+            con.Close();
+
+            return alloys;
         }
     }
 }

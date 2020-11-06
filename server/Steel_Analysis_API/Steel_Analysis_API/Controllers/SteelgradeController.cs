@@ -24,7 +24,7 @@ namespace Steel_Analysis_API.Controllers
         }
 
         [HttpGet]
-        public String Get()
+        public string Get()
         {
             con.Open();
             cmd = new MySqlCommand("select name, elements from steelgrades", con);
@@ -48,7 +48,7 @@ namespace Steel_Analysis_API.Controllers
         }
 
         [HttpPost]
-        public String Post([FromBody] Steelgrade steelgrade)
+        public string Post([FromBody] Steelgrade steelgrade)
         {
             con.Open();
 

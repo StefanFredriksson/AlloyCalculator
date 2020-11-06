@@ -34,6 +34,9 @@ export default function Header () {
             <Link to='/analysis/add' className='dropdown-link'>
               Add analysis
             </Link>
+            <Link to='/analysis/calculate' className='dropdown-link'>
+              Calculate
+            </Link>
             <Link to='#' className='dropdown-link'>
               Delete analysis
             </Link>

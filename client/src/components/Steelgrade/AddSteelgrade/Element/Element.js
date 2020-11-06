@@ -16,13 +16,13 @@ export default function Element () {
       />
       <input
         type='number'
-        className='max-analysis'
-        placeholder='Enter max analysis'
+        className='aim-analysis'
+        placeholder='Enter aim analysis'
       />
       <input
         type='number'
-        className='aim-analysis'
-        placeholder='Enter aim analysis'
+        className='max-analysis'
+        placeholder='Enter max analysis'
       />
     </div>
   )

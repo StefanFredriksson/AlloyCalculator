@@ -1,0 +1,10 @@
+.added-alloy {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.added-alloy label:first-child {
+  justify-self: right;
+  margin-right: 20px;
+}

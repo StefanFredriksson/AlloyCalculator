@@ -5,7 +5,7 @@ export default function Steelgrade (props) {
   return (
     <div className='steelgrade-choice-div'>
       <label
-        for={props.steelgrade.name}
+        htmlFor={props.steelgrade.name}
         className='steelgrade-choice-container'
       >
         <input

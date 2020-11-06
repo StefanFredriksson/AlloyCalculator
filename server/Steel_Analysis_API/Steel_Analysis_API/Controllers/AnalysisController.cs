@@ -1,0 +1,94 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
+using Steel_Analysis_API.Models;
+using Newtonsoft.Json;
+
+namespace Steel_Analysis_API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AnalysisController : ControllerBase
+    {
+        private MySqlConnection con = null;
+        private MySqlCommand cmd = null;
+
+        public AnalysisController(IConfiguration config)
+        {
+            con = new MySqlConnection(config.GetValue<string>("DB_String"));
+        }
+
+        [HttpGet]
+        public string Get()
+        {
+            con.Open();
+            cmd = new MySqlCommand("select name, steelgrade, weight, elements from analysis", con);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            List<Analysis> analysis = new List<Analysis>();
+
+            while (reader.Read())
+            {
+                List<AnalysisElement> elements = JsonConvert.DeserializeObject<IEnumerable<AnalysisElement>>((string)reader[3]) as List<AnalysisElement>;
+                string name = (string)reader[0];
+                string steelgrade = (string)reader[1];
+                double weight = (double)reader[2];
+                analysis.Add(new Analysis(name, steelgrade, weight, elements));
+            }
+
+            string json = JsonConvert.SerializeObject(analysis);
+
+            reader.Close();
+            cmd.Dispose();
+            con.Close();
+
+            return json;
+        }
+
+        [HttpPost]
+        public string Post([FromBody] Analysis analysis)
+        {
+            con.Open();
+
+            MySqlCommand cmd = new MySqlCommand($"insert into analysis (name, steelgrade, weight, elements)" +
+                $"values (\"{analysis.name}\", \"{analysis.steelgrade}\", \"{analysis.weight}\", \"{analysis.elements.Replace("\"", "'")}\")", con);
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+            con.Close();
+
+            return "OK!";
+        }
+
+        [Route("/api/[controller]/calculate")]
+        [HttpGet]
+        public string Calculate([FromQuery(Name = "analysis")] string analysisName)
+        {
+            con.Open();
+            cmd = new MySqlCommand($"select name, steelgrade, weight, elements from analysis where name=\"{analysisName}\"", con);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            Analysis analysis = null;
+            
+            while(reader.Read())
+            {
+                List<AnalysisElement> elements = JsonConvert.DeserializeObject<IEnumerable<AnalysisElement>>((string)reader[3]) as List<AnalysisElement>;
+                analysis = new Analysis((string)reader[0], (string)reader[1], (double)reader[2], elements);
+            }
+
+            reader.Close();
+            cmd.Dispose();
+            con.Close();
+
+            List<Alloy> alloys = AlloyController.GetAlloys(con, cmd);
+
+            Logic.BeginCalculation(analysis, alloys);
+
+            string json = JsonConvert.SerializeObject(analysis.addedAlloys);
+
+            return json;
+        }
+    }
+}
