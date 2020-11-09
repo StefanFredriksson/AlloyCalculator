@@ -24,6 +24,14 @@ namespace Steel_Analysis_API.Models
                 return weight;
             } set
             {
+                weight = value;
+            }
+        }
+
+        public double AddWeight
+        {
+            set
+            {
                 weight += value;
             }
         }

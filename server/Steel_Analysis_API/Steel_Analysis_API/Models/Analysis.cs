@@ -29,5 +29,54 @@ namespace Steel_Analysis_API.Models
             this.weight = weight;
             this.elementList = elementList;
         }
+
+        public double TotalPrice
+        {
+            get
+            {
+                return addedAlloys.Sum(alloy => alloy.TotalPrice);
+            }
+        }
+
+        public Analysis DeepCopy()
+        {
+            Analysis temp = new Analysis(name, steelgrade, weight, elementList);
+            List<AnalysisElement> tempList = new List<AnalysisElement>();
+
+            foreach (AnalysisElement ae in this.elementList)
+            {
+                tempList.Add(new AnalysisElement(ae.name, ae.min, ae.aim, ae.max, ae.actual, ae.weight));
+            }
+
+            List<AddedAlloy> tempAlloys = new List<AddedAlloy>();
+
+            foreach (AddedAlloy alloy in addedAlloys)
+            {
+                AddedAlloy tempAlloy = new AddedAlloy(alloy.name, alloy.price);
+                tempAlloy.Weight = alloy.Weight;
+                tempAlloys.Add(tempAlloy);
+            }
+
+            temp.elementList = tempList;
+            temp.addedAlloys = tempAlloys;
+
+            return temp;
+        }
+
+        public override string ToString()
+        {
+            string print = "";
+
+            print += "---------------------------------------\n";
+
+            foreach (AnalysisElement ae in elementList)
+            {
+                print += ae.ToString() + "\n";
+            }
+
+            print += "---------------------------------------";
+
+            return print;
+        }
     }
 }

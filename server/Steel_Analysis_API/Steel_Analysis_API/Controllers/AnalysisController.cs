@@ -84,9 +84,17 @@ namespace Steel_Analysis_API.Controllers
 
             List<Alloy> alloys = AlloyController.GetAlloys(con, cmd);
 
-            Logic.BeginCalculation(analysis, alloys);
+            //Analysis cheapest = Logic.TestAlloy(analysis, alloys);
+            //Analysis cheapest = Logic.BeginSimpleCalculation(analysis.DeepCopy(), alloys);
+            Analysis cheapest = Logic.BeginCheapestCalculation(analysis, alloys);
+            //Logic.CalculateUsingAllCombinations(analysis, alloys);
 
-            string json = JsonConvert.SerializeObject(analysis.addedAlloys);
+            Console.WriteLine("------------------------\nFINISHED\n------------------------------");
+            //Console.WriteLine(cheapest.TotalPrice);
+
+            Console.WriteLine(cheapest);
+
+            string json = JsonConvert.SerializeObject(cheapest.addedAlloys);
 
             return json;
         }
