@@ -1,0 +1,17 @@
+#final-analysis-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#final-analysis-container table {
+  border-spacing: 30px;
+}
+
+#final-analysis-container table th {
+  border-bottom: 2px solid black;
+}
+
+#final-analysis-container table td {
+  text-align: center;
+}

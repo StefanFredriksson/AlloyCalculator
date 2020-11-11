@@ -4,19 +4,16 @@ import './Steelgrade.css'
 export default function Steelgrade (props) {
   return (
     <div className='steelgrade-choice-div'>
-      <label
-        htmlFor={props.steelgrade.name}
-        className='steelgrade-choice-container'
-      >
+      <label htmlFor={props.steelgrade.name} className='radio-btn-container'>
         <input
           type='radio'
           id={props.steelgrade.name}
-          className='steelgrade-choice'
+          className='radio-btn'
           name='steelgrade'
           value={props.steelgrade.name}
           onChange={props.renderSteelgrade}
         />
-        <span className='custom-radio'>{props.steelgrade.name}</span>
+        <span className='radio-btn-span'>{props.steelgrade.name}</span>
       </label>
     </div>
   )

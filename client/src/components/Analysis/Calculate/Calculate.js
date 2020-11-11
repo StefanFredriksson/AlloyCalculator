@@ -1,13 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react'
 import './Calculate.css'
-import Steelgrade from '../AddAnalysis/Steelgrade/Steelgrade'
 import { FlashMessageContext } from '../../../Store'
 import AddedAlloy from './AddedAlloys/AddedAlloys'
+import AnalysisSelection from './AnalysisSelection/AnalysisSelection'
+import OriginalAnalysis from './OriginalAnalysis/OriginalAnalysis'
+import FinalAnalysis from './FinalAnalysis/FinalAnalysis'
 
 export default function Calculate () {
   const [analysis, setAnalysis] = useState([])
   const [chosen, setChosen] = useState(null)
   const [addedAlloys, setAddedAlloys] = useState([])
+  const [chosenAnalysis, setChosenAnalysis] = useState([])
+  const [finalAnalysis, setFinalAnalysis] = useState([])
+  const [totalPrice, setTotalPrice] = useState(null)
   const [flash, setFlash] = useContext(FlashMessageContext)
 
   useEffect(() => {
@@ -18,8 +23,13 @@ export default function Calculate () {
     })
   }, [])
 
-  const buttonClicked = event => {
-    setChosen(event.target.value)
+  const renderAnalysis = event => {
+    const a = analysis.find(anls => anls.name === event.target.value)
+
+    if (a) {
+      setChosenAnalysis([...a.elementList])
+      setChosen(event.target.value)
+    }
   }
 
   const calculateAnalysis = event => {
@@ -31,43 +41,28 @@ export default function Calculate () {
       .fetch(`https://localhost:5001/api/analysis/calculate?analysis=${chosen}`)
       .then(response => {
         response.json().then(data => {
-          setAddedAlloys([...data])
+          setAddedAlloys([...data.addedAlloys])
+          setFinalAnalysis([...data.elementList])
+          setTotalPrice(data.TotalPrice)
         })
       })
   }
 
   return (
     <div id='calculate-main-container'>
-      <div id='analysis-selection-container'>
-        {analysis.map(a => {
-          return <Steelgrade renderSteelgrade={buttonClicked} steelgrade={a} />
-        })}
+      <div id='data-display-container'>
+        <AnalysisSelection buttonClicked={renderAnalysis} analysis={analysis} />
+        <AddedAlloy addedAlloys={addedAlloys} totalPrice={totalPrice} />
+        <OriginalAnalysis analysis={chosenAnalysis} />
+        <FinalAnalysis analysis={finalAnalysis} />
       </div>
-      <button id='save-analysis' onClick={calculateAnalysis}>
+      <button
+        id='calculate-btn'
+        className='btn btn-darker'
+        onClick={calculateAnalysis}
+      >
         Calculate
       </button>
-      <div id='added-alloys-container'>
-        <table id='alloy-table'>
-          <thead>
-            <tr>
-              <th>Alloy</th>
-              <th>Weight</th>
-              <th>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {addedAlloys.map(al => {
-              return (
-                <tr>
-                  <td>{al.name}</td>
-                  <td>{al.Weight.toFixed(2)}kg </td>
-                  <td>{al.TotalPrice.toFixed(2)}kr</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
     </div>
   )
 }

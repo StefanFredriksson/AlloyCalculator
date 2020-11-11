@@ -221,8 +221,8 @@ namespace Steel_Analysis_API.Models
 
         private static double AddAlloy(Alloy a, AnalysisElement e, Analysis analysis)
         {
-            //double weightToAdd = analysis.weight * (e.aim - e.actual);
-            double weightToAdd = 0.1;
+            double weightToAdd = analysis.weight * (e.aim - e.actual);
+            //double weightToAdd = 0.1;
             double alloyWeightToAdd = 0;
 
             foreach (AlloyElement ae in a.ElementList)
@@ -304,6 +304,7 @@ namespace Steel_Analysis_API.Models
         {
             AddIron(analysis);
             int counter = 0;
+            int printCounter = 0;
 
             while (counter < analysis.elementList.Count)
             {
@@ -336,11 +337,16 @@ namespace Steel_Analysis_API.Models
                             }
                         }
 
-                        Console.WriteLine(analysisElement.name + "::" + name);
-                        Console.WriteLine(cheapest);
-                        //Thread.Sleep(500);
+                        if (printCounter > 1000000)
+                        {
+                            Console.WriteLine(analysisElement.name + "::" + name);
+                            Console.WriteLine(cheapest);
+                            //Thread.Sleep(500);
+                            printCounter = 0;
+                        }
                         analysis = cheapest;
                         counter = 0;
+                        printCounter++;
                     }
                     else if ((analysisElement.actual > analysisElement.max || analysisElement.actual - analysisElement.aim > (analysisElement.max - analysisElement.aim) / 2) && 
                         analysisElement.name != "Fe")
@@ -437,15 +443,15 @@ namespace Steel_Analysis_API.Models
         {
             double points = 0;
 
-            for (int i = 0; i < temp.elementList.Count; i++)
+            for (int i = 0; i < alloy.ElementList.Count; i++)
             {
-                AnalysisElement tempElement = temp.elementList[i];
-                AnalysisElement originalElement = original.elementList[i];
+                AnalysisElement tempElement = temp.elementList.Find(e => e.name == alloy.ElementList[i].name);
+                AnalysisElement originalElement = original.elementList.Find(e => e.name == alloy.ElementList[i].name);
 
-                /*if (tempElement.name == "Fe")
+                if (tempElement == null)
                 {
                     continue;
-                }*/
+                }
 
                 double magnitude = 1;
 
@@ -477,11 +483,11 @@ namespace Steel_Analysis_API.Models
                     points += (1 / tempDistance) * magnitude;
                 }
 
-                if (tempElement.actual < tempElement.min || tempElement.actual > tempElement.max)
+                /*if (tempElement.actual < tempElement.min || tempElement.actual > tempElement.max)
                 {
                     //points += 10 * (tempDistance * 100);
                     return Double.MaxValue;
-                }
+                }*/
 
                 points *= magnitude;
             }

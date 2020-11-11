@@ -94,7 +94,7 @@ namespace Steel_Analysis_API.Controllers
 
             Console.WriteLine(cheapest);
 
-            string json = JsonConvert.SerializeObject(cheapest.addedAlloys);
+            string json = JsonConvert.SerializeObject(cheapest);
 
             return json;
         }
