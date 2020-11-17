@@ -221,8 +221,8 @@ namespace Steel_Analysis_API.Models
 
         private static double AddAlloy(Alloy a, AnalysisElement e, Analysis analysis)
         {
-            double weightToAdd = analysis.weight * (e.aim - e.actual);
-            //double weightToAdd = 0.1;
+            //double weightToAdd = analysis.weight * (e.aim - e.actual);
+            double weightToAdd = 0.1;
             double alloyWeightToAdd = 0;
 
             foreach (AlloyElement ae in a.ElementList)
@@ -304,13 +304,15 @@ namespace Steel_Analysis_API.Models
         {
             AddIron(analysis);
             int counter = 0;
-            int printCounter = 0;
 
             while (counter < analysis.elementList.Count)
             {
+                if (analysis.weight > analysis.maxWeight)
+                    break;
+
                 foreach (AnalysisElement analysisElement in analysis.elementList)
                 {
-                    if ((analysisElement.actual < analysisElement.min || analysisElement.aim - analysisElement.actual > (analysisElement.aim - analysisElement.min) / 2) && 
+                    if ((analysisElement.actual < analysisElement.min/* || analysisElement.aim - analysisElement.actual > (analysisElement.aim - analysisElement.min) / 2*/) && 
                             analysisElement.name != "Fe")
                     {
                         Analysis cheapest = analysis.DeepCopy();
@@ -326,8 +328,6 @@ namespace Steel_Analysis_API.Models
                                 AddAlloy(alloy, analysisElement, temp);
                                 double points = CalculatePoints(temp, analysis, alloy, analysisElement);
 
-                                //Console.WriteLine(alloy.name + " Points: " + points);
-
                                 if (points < minPoints)
                                 {
                                     minPoints = points;
@@ -337,18 +337,10 @@ namespace Steel_Analysis_API.Models
                             }
                         }
 
-                        if (printCounter > 1000000)
-                        {
-                            Console.WriteLine(analysisElement.name + "::" + name);
-                            Console.WriteLine(cheapest);
-                            //Thread.Sleep(500);
-                            printCounter = 0;
-                        }
                         analysis = cheapest;
                         counter = 0;
-                        printCounter++;
                     }
-                    else if ((analysisElement.actual > analysisElement.max || analysisElement.actual - analysisElement.aim > (analysisElement.max - analysisElement.aim) / 2) && 
+                    else if ((analysisElement.actual > analysisElement.max/* || analysisElement.actual - analysisElement.aim > (analysisElement.max - analysisElement.aim) / 2*/) && 
                         analysisElement.name != "Fe")
                     {
                         Alloy feBase = alloys.Find(a => a.name == "Fe-base");

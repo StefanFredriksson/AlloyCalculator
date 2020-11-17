@@ -9,24 +9,26 @@ namespace Steel_Analysis_API.Models
     public class Analysis
     {
         public string name, elements, steelgrade;
-        public double weight;
+        public double weight, maxWeight;
         public List<AnalysisElement> elementList;
         public List<AddedAlloy> addedAlloys = new List<AddedAlloy>();
 
         [JsonConstructor]
-        public Analysis(string name, string steelgrade, string elements, double weight)
+        public Analysis(string name, string steelgrade, string elements, double weight, double maxWeight)
         {
             this.name = name;
             this.steelgrade = steelgrade;
             this.elements = elements;
             this.weight = weight;
+            this.maxWeight = maxWeight;
         }
 
-        public Analysis(string name, string steelgrade, double weight, List<AnalysisElement> elementList)
+        public Analysis(string name, string steelgrade, double weight, double maxWeight, List<AnalysisElement> elementList)
         {
             this.name = name;
             this.steelgrade = steelgrade;
             this.weight = weight;
+            this.maxWeight = maxWeight;
             this.elementList = elementList;
         }
 
@@ -40,7 +42,7 @@ namespace Steel_Analysis_API.Models
 
         public Analysis DeepCopy()
         {
-            Analysis temp = new Analysis(name, steelgrade, weight, elementList);
+            Analysis temp = new Analysis(name, steelgrade, weight, maxWeight, elementList);
             List<AnalysisElement> tempList = new List<AnalysisElement>();
 
             foreach (AnalysisElement ae in this.elementList)

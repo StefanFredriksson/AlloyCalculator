@@ -1,5 +1,7 @@
 #analysis-selection-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(auto-fill, 40px);
   column-gap: 10px;
+  row-gap: 10px;
 }

@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react'
 import './AddSteelgrade.css'
 import Element from './Element/Element'
-import { FlashMessageContext } from '../../../Store'
+import { FlashMessageContext, HostContext } from '../../../Store'
 
 export default function AddSteelgrade () {
   const [elements, setElements] = useState([])
   const [flash, setFlash] = useContext(FlashMessageContext)
+  const [host] = useContext(HostContext)
 
   const addElement = () => {
     setElements(old => [...old, 0])
@@ -33,9 +34,9 @@ export default function AddSteelgrade () {
 
       elementsToSave.push({
         name,
-        min: parseFloat(min),
-        max: parseFloat(max),
-        aim: parseFloat(aim)
+        min: parseFloat(min) / 100,
+        max: parseFloat(max) / 100,
+        aim: parseFloat(aim) / 100
       })
     }
 
@@ -45,7 +46,7 @@ export default function AddSteelgrade () {
     }
 
     window
-      .fetch('https://localhost:5001/api/steelgrade', {
+      .fetch(host + '/api/steelgrade', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

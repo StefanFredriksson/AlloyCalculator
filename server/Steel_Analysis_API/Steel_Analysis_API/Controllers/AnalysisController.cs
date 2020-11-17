@@ -27,7 +27,7 @@ namespace Steel_Analysis_API.Controllers
         public string Get()
         {
             con.Open();
-            cmd = new MySqlCommand("select name, steelgrade, weight, elements from analysis", con);
+            cmd = new MySqlCommand("select name, steelgrade, weight, elements, maxWeight from analysis", con);
             MySqlDataReader reader = cmd.ExecuteReader();
             List<Analysis> analysis = new List<Analysis>();
 
@@ -37,7 +37,8 @@ namespace Steel_Analysis_API.Controllers
                 string name = (string)reader[0];
                 string steelgrade = (string)reader[1];
                 double weight = (double)reader[2];
-                analysis.Add(new Analysis(name, steelgrade, weight, elements));
+                double maxWeight = (double)reader[4];
+                analysis.Add(new Analysis(name, steelgrade, weight, maxWeight, elements));
             }
 
             string json = JsonConvert.SerializeObject(analysis);
@@ -54,8 +55,8 @@ namespace Steel_Analysis_API.Controllers
         {
             con.Open();
 
-            MySqlCommand cmd = new MySqlCommand($"insert into analysis (name, steelgrade, weight, elements)" +
-                $"values (\"{analysis.name}\", \"{analysis.steelgrade}\", \"{analysis.weight}\", \"{analysis.elements.Replace("\"", "'")}\")", con);
+            MySqlCommand cmd = new MySqlCommand($"insert into analysis (name, steelgrade, weight, maxWeight, elements)" +
+                $"values (\"{analysis.name}\", \"{analysis.steelgrade}\", \"{analysis.weight}\", \"{analysis.maxWeight}\", \"{analysis.elements.Replace("\"", "'")}\")", con);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
             con.Close();
@@ -68,14 +69,14 @@ namespace Steel_Analysis_API.Controllers
         public string Calculate([FromQuery(Name = "analysis")] string analysisName)
         {
             con.Open();
-            cmd = new MySqlCommand($"select name, steelgrade, weight, elements from analysis where name=\"{analysisName}\"", con);
+            cmd = new MySqlCommand($"select name, steelgrade, weight, elements, maxWeight from analysis where name=\"{analysisName}\"", con);
             MySqlDataReader reader = cmd.ExecuteReader();
             Analysis analysis = null;
             
             while(reader.Read())
             {
                 List<AnalysisElement> elements = JsonConvert.DeserializeObject<IEnumerable<AnalysisElement>>((string)reader[3]) as List<AnalysisElement>;
-                analysis = new Analysis((string)reader[0], (string)reader[1], (double)reader[2], elements);
+                analysis = new Analysis((string)reader[0], (string)reader[1], (double)reader[2], (double)reader[4], elements);
             }
 
             reader.Close();

@@ -1,13 +1,14 @@
 import React, { useState, useContext } from 'react'
 import './AddAlloy.css'
 import Element from './Element/Element'
-import { FlashMessageContext } from '../../../Store'
+import { FlashMessageContext, HostContext } from '../../../Store'
 
 let elements = []
 
 export default function AddAlloy () {
   const [count, setCount] = useState(0)
   const [flash, setFlash] = useContext(FlashMessageContext)
+  const [host] = useContext(HostContext)
 
   const addElement = event => {
     elements.push(0)
@@ -38,7 +39,7 @@ export default function AddAlloy () {
 
       elementsToSave.push({
         name: elementName,
-        value: parseFloat(elementValue)
+        value: parseFloat(elementValue) / 100
       })
     }
     const alloy = {
@@ -48,7 +49,7 @@ export default function AddAlloy () {
     }
 
     window
-      .fetch('https://localhost:5001/api/alloy', {
+      .fetch(host + '/api/alloy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

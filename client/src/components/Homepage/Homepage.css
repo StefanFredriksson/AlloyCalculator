@@ -1,0 +1,102 @@
+#homepage-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#img-container {
+  position: relative;
+  width: 1100px;
+  display: flex;
+  flex-wrap: wrap;
+  transform-style: preserve-3d;
+  perspective: 500px;
+}
+
+#img-container .box {
+  position: relative;
+  width: 275px;
+  height: 275px;
+  background: black;
+  transition: 0.5s;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+#img-container:hover .box {
+  transform: rotateY(25deg);
+}
+
+#img-container .box:hover ~ .box {
+  transform: rotateY(-25deg);
+}
+
+#img-container .box:hover {
+  transform: rotateY(0deg) scale(1.25);
+  z-index: 1;
+  box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5);
+}
+
+#img-container .box .imgBx {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#img-container .box .imgBx:before {
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #50a3a2, #000);
+  z-index: 1;
+  opacity: 0;
+  transition: 0.5s;
+  mix-blend-mode: multiply;
+}
+
+#img-container .box:hover .imgBx:before {
+  opacity: 1;
+}
+
+#img-container .box .imgBx img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#img-container .box .content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  padding: 20px;
+  align-items: flex-end;
+  box-sizing: border-box;
+}
+
+#img-container .box .content h2 {
+  color: white;
+  transition: 0.5s;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  font-size: 20px;
+  transform: translateY(200px);
+}
+
+#img-container .box:hover .content h2 {
+  transform: translateY(0px);
+  transition-delay: 0.7s;
+}

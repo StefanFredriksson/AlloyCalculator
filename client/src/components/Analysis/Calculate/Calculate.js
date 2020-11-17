@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 import './Calculate.css'
-import { FlashMessageContext } from '../../../Store'
+import { FlashMessageContext, HostContext } from '../../../Store'
 import AddedAlloy from './AddedAlloys/AddedAlloys'
 import AnalysisSelection from './AnalysisSelection/AnalysisSelection'
 import OriginalAnalysis from './OriginalAnalysis/OriginalAnalysis'
@@ -14,9 +14,10 @@ export default function Calculate () {
   const [finalAnalysis, setFinalAnalysis] = useState([])
   const [totalPrice, setTotalPrice] = useState(null)
   const [flash, setFlash] = useContext(FlashMessageContext)
+  const [host] = useContext(HostContext)
 
   useEffect(() => {
-    window.fetch('https://localhost:5001/api/analysis').then(response => {
+    window.fetch(host + '/api/analysis').then(response => {
       response.json().then(data => {
         setAnalysis([...data])
       })
@@ -38,7 +39,7 @@ export default function Calculate () {
     }
 
     window
-      .fetch(`https://localhost:5001/api/analysis/calculate?analysis=${chosen}`)
+      .fetch(`${host}/api/analysis/calculate?analysis=${chosen}`)
       .then(response => {
         response.json().then(data => {
           setAddedAlloys([...data.addedAlloys])

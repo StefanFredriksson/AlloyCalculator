@@ -1,0 +1,108 @@
+#content-container {
+  width: 30%;
+  height: 70%;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 8px 8px 24px rgba(0, 0, 0, 0.2),
+    16px 16px 48px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 20px;
+  z-index: 0;
+}
+
+#alloy-header {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#alloy-header button {
+  background: #00b0ff;
+  padding: 10px 5px;
+  border: none;
+  outline: none;
+  color: white;
+  border-radius: 10px;
+  transition: 0.5s;
+}
+
+#alloy-header button:hover {
+  background: #0091d4;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+#alloys-container {
+  margin-top: 20px;
+  width: 100%;
+  height: 90%;
+  overflow: auto;
+}
+
+#alloys-container .alloy-div {
+  padding: 10px;
+  width: 90%;
+  height: 8%;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: thin solid rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}
+
+#alloys-container .alloy-div:hover {
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+#alloys-container .alloy-div .name-price-div .title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+#alloys-container .alloy-div .subtitle {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+#alloys-container .alloy-div .name-price-div .subtitle {
+  margin-left: 20px;
+}
+
+.delete-btn-container {
+  float: right;
+  height: 100%;
+  width: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delete-btn-container .delete-btn {
+  height: 30px;
+  width: 30px;
+  border: none;
+  outline: none;
+  background: transparent;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  font-size: 22px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.delete-btn-container .delete-btn {
+  transform: rotate(180deg);
+  transition: 0.5s;
+}
+
+.delete-btn-container .delete-btn:hover {
+  transform: rotate(0deg);
+  transition: 0.5s;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.05);
+}

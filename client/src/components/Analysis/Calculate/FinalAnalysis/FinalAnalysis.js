@@ -1,6 +1,8 @@
 import './FinalAnalysis.css'
 import React from 'react'
 
+const regex = /\B(?=(\d{3})+(?!\d))/g
+
 export default function FinalAnalysis (props) {
   return (
     <div id='final-analysis-container' className='container'>
@@ -21,11 +23,17 @@ export default function FinalAnalysis (props) {
             return (
               <tr>
                 <td>{a.name}</td>
-                <td>{a.actual.toFixed(4)}</td>
-                <td>{a.min.toFixed(4)}</td>
-                <td>{a.aim.toFixed(4)}</td>
-                <td>{a.max.toFixed(4)}</td>
-                <td>{a.weight.toFixed(1)}</td>
+                <td>{(a.actual * 100).toFixed(2)}%</td>
+                <td>{(a.min * 100).toFixed(2)}%</td>
+                <td>{(a.aim * 100).toFixed(2)}%</td>
+                <td>{(a.max * 100).toFixed(2)}%</td>
+                <td>
+                  {a.weight
+                    .toFixed(1)
+                    .toString()
+                    .replace(regex, ' ')}
+                  kg
+                </td>
               </tr>
             )
           })}

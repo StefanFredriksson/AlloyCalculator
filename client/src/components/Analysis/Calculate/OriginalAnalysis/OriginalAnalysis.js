@@ -1,6 +1,8 @@
 import './OriginalAnalysis.css'
 import React from 'react'
 
+const regex = /\B(?=(\d{3})+(?!\d))/g
+
 export default function OriginalAnalysis (props) {
   return (
     <div className='container' id='original-analysis-container'>
@@ -21,11 +23,17 @@ export default function OriginalAnalysis (props) {
             return (
               <tr>
                 <td>{e.name}</td>
-                <td>{e.actual}</td>
-                <td>{e.min}</td>
-                <td>{e.aim}</td>
-                <td>{e.max}</td>
-                <td>{e.weight}</td>
+                <td>{(e.actual * 100).toFixed(2)}%</td>
+                <td>{(e.min * 100).toFixed(2)}%</td>
+                <td>{(e.aim * 100).toFixed(2)}%</td>
+                <td>{(e.max * 100).toFixed(2)}%</td>
+                <td>
+                  {e.weight
+                    .toFixed(1)
+                    .toString()
+                    .replace(regex, ' ')}
+                  kg
+                </td>
               </tr>
             )
           })}

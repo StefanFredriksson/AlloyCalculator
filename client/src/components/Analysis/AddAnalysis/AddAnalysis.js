@@ -2,15 +2,16 @@ import React, { useState, useContext, useEffect } from 'react'
 import './AddAnalysis.css'
 import Steelgrade from './Steelgrade/Steelgrade'
 import Element from './Element/Element'
-import { FlashMessageContext } from '../../../Store'
+import { FlashMessageContext, HostContext } from '../../../Store'
 
 export default function AddAnalysis () {
   const [steelgrades, setSteelgrades] = useState([])
   const [elements, setElements] = useState([])
   const [flash, setFlash] = useContext(FlashMessageContext)
+  const [host] = useContext(HostContext)
 
   useEffect(() => {
-    window.fetch('https://localhost:5001/api/steelgrade').then(response => {
+    window.fetch(host + '/api/steelgrade').then(response => {
       response.json().then(data => {
         setSteelgrades([...data])
       })
@@ -24,6 +25,7 @@ export default function AddAnalysis () {
 
   const saveAnalysis = event => {
     const weight = document.querySelector('#weight-input')
+    const maxWeight = document.querySelector('#max-weight-input')
     const name = document.querySelector('#analysis-name-input')
 
     if (weight.value === '' || name.value === '') {
@@ -31,7 +33,7 @@ export default function AddAnalysis () {
     }
 
     const els = document.querySelectorAll('.analysis-element')
-    const steels = document.querySelectorAll('.steelgrade-choice')
+    const steels = document.querySelectorAll('.radio-btn')
 
     let steelgrade = null
 
@@ -43,7 +45,7 @@ export default function AddAnalysis () {
 
     for (const el of els) {
       const element = elements.find(e => e.name === el.id)
-      element.actual = parseFloat(el.value)
+      element.actual = parseFloat(el.value) / 100
       element.weight = weight.value * element.actual
     }
 
@@ -51,11 +53,12 @@ export default function AddAnalysis () {
       name: name.value,
       steelgrade,
       weight: parseFloat(weight.value),
+      maxWeight: parseFloat(maxWeight.value),
       elements: JSON.stringify(elements)
     }
 
     window
-      .fetch('https://localhost:5001/api/analysis', {
+      .fetch(host + '/api/analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -66,6 +69,7 @@ export default function AddAnalysis () {
         if (response.ok) {
           name.value = ''
           weight.value = ''
+          maxWeight.value = ''
           for (const el of els) {
             el.value = ''
           }
@@ -101,6 +105,11 @@ export default function AddAnalysis () {
           type='text'
           id='analysis-name-input'
           placeholder='Enter name of analysis'
+        />
+        <input
+          type='number'
+          id='max-weight-input'
+          placeholder='Enter max weight of analysis'
         />
       </div>
       <button id='save-analysis' onClick={saveAnalysis}>

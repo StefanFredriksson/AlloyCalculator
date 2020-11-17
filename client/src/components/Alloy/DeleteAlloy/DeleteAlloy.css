@@ -1,0 +1,28 @@
+#delete-alloy-main-container {
+  height: 70%;
+  width: 50%;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#alloy-selection-container {
+  height: 70%;
+  width: 70%;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(auto-fill, 50px);
+  column-gap: 10px;
+  padding: 10px;
+}
+
+#alloy-selection-container > div {
+  text-align: center;
+}
+
+#delete-alloy-btn {
+  margin-top: 20px;
+}

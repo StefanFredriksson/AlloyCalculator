@@ -47,6 +47,34 @@ namespace Steel_Analysis_API.Controllers
             return "OK!";
         }
 
+        [HttpPut]
+        public String Put([FromBody] PutAlloy putAlloy)
+        {
+            con.Open();
+
+            MySqlCommand cmd = new MySqlCommand($"update alloys set name='{putAlloy.alloy.name}', price='{putAlloy.alloy.price}', elements='{putAlloy.alloy.elements}'" +
+                $" where name='{putAlloy.prevName}'", con);
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+            con.Close();
+
+            return "Ok!";
+        }
+
+        [HttpDelete]
+        public String Delete([FromBody] string alloy)
+        {
+            con.Open();
+            string query = $"delete from alloys where name=\"{alloy}\"";
+
+            MySqlCommand cmd = new MySqlCommand(query, con);
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+            con.Close();
+
+            return "Ok!";
+        }
+
         public static List<Alloy> GetAlloys(MySqlConnection con, MySqlCommand cmd)
         {
             if (con == null || con.State == ConnectionState.Closed)

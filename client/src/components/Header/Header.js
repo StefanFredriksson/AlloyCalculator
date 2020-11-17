@@ -9,10 +9,13 @@ export default function Header () {
         <div className='dropdown'>
           <span>Alloy</span>
           <div className='dropdown-content'>
+            <Link to='/alloy' className='dropdown-link'>
+              Alloy
+            </Link>
             <Link to='/alloy/add' className='dropdown-link'>
               Add alloy
             </Link>
-            <Link to='#' className='dropdown-link'>
+            <Link to='/alloy/delete' className='dropdown-link'>
               Delete alloy
             </Link>
           </div>
