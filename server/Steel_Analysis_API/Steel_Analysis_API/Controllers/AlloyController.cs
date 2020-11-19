@@ -25,10 +25,20 @@ namespace Steel_Analysis_API.Controllers
         }
 
         [HttpGet]
-        public String Get()
+        public String Get([FromQuery] string name)
         {
-            List<Alloy> alloys = GetAlloys(con, cmd);
-            string json = JsonConvert.SerializeObject(alloys);
+            string json = "";
+
+            if (name == null)
+            {
+                List<Alloy> alloys = GetAlloys(con, cmd);
+                json = JsonConvert.SerializeObject(alloys);
+            } else
+            {
+                Alloy alloy = GetOneAlloy(con, cmd, name);
+                json = JsonConvert.SerializeObject(alloy);
+            }
+            
 
             return json;
         }
@@ -98,6 +108,32 @@ namespace Steel_Analysis_API.Controllers
             con.Close();
 
             return alloys;
+        }
+
+        private static Alloy GetOneAlloy(MySqlConnection con, MySqlCommand cmd, string name)
+        {
+            if (con == null || con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
+
+            cmd = new MySqlCommand($"select name, price, elements from alloys where name=\"{name}\"", con);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            Alloy alloy = null;
+
+            while (reader.Read())
+            {
+                List<AlloyElement> elements = JsonConvert.DeserializeObject<IEnumerable<AlloyElement>>((string)reader[2]) as List<AlloyElement>;
+                string alloyName = (string)reader[0];
+                double price = Double.Parse((string)reader[1]);
+                alloy = new Alloy(alloyName, elements, price);
+            }
+
+            reader.Close();
+            cmd.Dispose();
+            con.Close();
+
+            return alloy;
         }
     }
 }

@@ -4,20 +4,42 @@ import AlloyNamePrice from './AlloyNamePrice/AlloyNamePrice'
 import ElementTable from './ElementTable/ElementTable'
 import ConfirmEdit from './ConfirmEdit/ConfirmEdit'
 import { HostContext } from '../../../Store'
+import { useParams } from 'react-router-dom'
 
-export default function EditAlloy (props) {
-  const [alloy, setAlloy] = useState(props.alloy)
+export default function EditAlloy () {
+  const [alloy, setAlloy] = useState({ name: '', price: 0, ElementList: [] })
+  const [originalName, setOriginalName] = useState(useParams().name)
   const [host] = useContext(HostContext)
 
   useEffect(() => {
-    setInputValues(alloy.ElementList)
+    getAlloy()
+  }, [])
+
+  useEffect(() => {
+    setInputValues(alloy.ElementList, alloy)
   }, [alloy.ElementList.join(',')])
 
-  const setInputValues = e => {
+  const getAlloy = () => {
+    const link = host + '/api/alloy?name=' + originalName
+    window.fetch(link).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          setAlloy({ ...data })
+        })
+      }
+    })
+  }
+
+  const setInputValues = (e, a) => {
     const table = document.querySelector('#element-table')
     const names = table.querySelectorAll('.name')
     const values = table.querySelectorAll('.value')
     const btns = table.querySelectorAll('.delete-btn')
+    const name = document.querySelector('#name-input')
+    const price = document.querySelector('#price-input')
+
+    name.value = a.name
+    price.value = a.price
 
     for (let i = 0; i < e.length; i++) {
       names[i].value = e[i].name
@@ -43,7 +65,7 @@ export default function EditAlloy (props) {
     tempAlloy.price = alloyPrice
     tempAlloy.ElementList = []
     for (let i = 0; i < alloy.ElementList.length; i++) {
-      const v = parseFloat(values[i].value)
+      const v = parseFloat(values[i].value) / 100
       const n = names[i].value
 
       if (n === '' || isNaN(v)) {
@@ -65,7 +87,9 @@ export default function EditAlloy (props) {
       })
       .then(response => {
         if (response.ok) {
-          props.saveAlloy(tempAlloy, prevName)
+          if (originalName !== tempAlloy.name) {
+            setOriginalName(tempAlloy.name)
+          }
         }
       })
   }
@@ -76,7 +100,7 @@ export default function EditAlloy (props) {
 
     alloy.ElementList.push({
       name: name.value,
-      value: parseFloat(value.value)
+      value: parseFloat(value.value) / 100
     })
     setAlloy({ ...alloy })
 
@@ -92,14 +116,14 @@ export default function EditAlloy (props) {
 
   return (
     <div id='add-alloy-div'>
-      <h3>Editing {alloy.name}</h3>
+      <h3>Editing {originalName}</h3>
       <AlloyNamePrice alloy={alloy} />
       <ElementTable
         elements={alloy.ElementList}
         removeElement={removeElement}
         addNewElement={addNewElement}
       />
-      <ConfirmEdit saveAlloy={saveAlloy} goBack={props.closePopUp} />
+      <ConfirmEdit saveAlloy={saveAlloy} />
     </div>
   )
 }

@@ -1,11 +1,12 @@
 import './AlloyInformation.css'
 import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
 import { HostContext } from '../../../Store'
 
 export default function AlloyInformation (props) {
   const [host] = useContext(HostContext)
   const removeAlloy = event => {
-    event.stopPropagation()
+    event.preventDefault()
     const alloy = event.currentTarget.value
 
     window
@@ -27,30 +28,32 @@ export default function AlloyInformation (props) {
     <div id='content-container'>
       <div id='alloy-header'>
         <h3>Exisiting Alloys</h3>
-        <button>Add alloy</button>
+        <Link to='/alloy/add'>Add alloy</Link>
       </div>
       <div id='alloys-container'>
         {props.alloys.map(alloy => {
           return (
-            <div onClick={props.openPopUp} className='alloy-div'>
-              <div className='delete-btn-container'>
-                <button
-                  className='delete-btn'
-                  value={alloy.name}
-                  onClick={removeAlloy}
-                >
-                  X
-                </button>
+            <Link className='alloy-link' to={`/alloy/edit/${alloy.name}`}>
+              <div className='alloy-div'>
+                <div className='delete-btn-container'>
+                  <button
+                    className='delete-btn'
+                    value={alloy.name}
+                    onClick={removeAlloy}
+                  >
+                    X
+                  </button>
+                </div>
+                <div className='name-price-div'>
+                  <label className='title'>{alloy.name}</label>
+                  <label className='subtitle'>{alloy.price}kr/kg</label>
+                </div>
+                <label className='subtitle'>
+                  {alloy.ElementList.length}{' '}
+                  {alloy.ElementList.length > 1 ? 'elements' : 'element'}
+                </label>
               </div>
-              <div className='name-price-div'>
-                <label className='title'>{alloy.name}</label>
-                <label className='subtitle'>{alloy.price}kr/kg</label>
-              </div>
-              <label className='subtitle'>
-                {alloy.ElementList.length}{' '}
-                {alloy.ElementList.length > 1 ? 'elements' : 'element'}
-              </label>
-            </div>
+            </Link>
           )
         })}
       </div>

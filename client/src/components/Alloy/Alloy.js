@@ -6,8 +6,6 @@ import { HostContext } from '../../Store'
 
 export default function Alloy () {
   const [alloys, setAlloys] = useState([])
-  const [showPopUp, setShowPopUp] = useState(false)
-  const [chosenAlloy, setChosenAlloy] = useState(null)
   const [host] = useContext(HostContext)
 
   useEffect(() => {
@@ -20,17 +18,6 @@ export default function Alloy () {
     })
   }, [])
 
-  const openPopUp = event => {
-    const name = event.currentTarget.querySelector('.delete-btn').value
-    const alloy = alloys.find(a => a.name === name)
-    setChosenAlloy(alloy)
-    setShowPopUp(true)
-  }
-
-  const closePopUp = event => {
-    setShowPopUp(false)
-  }
-
   const removeAlloy = name => {
     const ix = alloys.findIndex(a => a.name === name)
 
@@ -40,30 +27,9 @@ export default function Alloy () {
     }
   }
 
-  const saveAlloy = (alloy, prevName) => {
-    const a = alloys.find(al => al.name === prevName)
-
-    a.name = alloy.name
-    a.price = alloy.price
-    a.ElementList = [...alloy.ElementList]
-    setAlloys([...alloys])
-  }
-
   return (
     <div id='main-alloy-container'>
-      {showPopUp ? (
-        <EditAlloy
-          alloy={chosenAlloy}
-          closePopUp={closePopUp}
-          saveAlloy={saveAlloy}
-        />
-      ) : (
-        <AlloyInformation
-          alloys={alloys}
-          openPopUp={openPopUp}
-          removeAlloy={removeAlloy}
-        />
-      )}
+      <AlloyInformation alloys={alloys} removeAlloy={removeAlloy} />
     </div>
   )
 }

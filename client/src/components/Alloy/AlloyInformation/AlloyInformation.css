@@ -12,6 +12,11 @@
   z-index: 0;
 }
 
+.alloy-link {
+  text-decoration: none;
+  color: black;
+}
+
 #alloy-header {
   width: 90%;
   display: flex;
@@ -19,8 +24,9 @@
   align-items: center;
 }
 
-#alloy-header button {
+#alloy-header a {
   background: #00b0ff;
+  text-decoration: none;
   padding: 10px 5px;
   border: none;
   outline: none;

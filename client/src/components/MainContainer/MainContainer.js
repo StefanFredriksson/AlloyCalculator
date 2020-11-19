@@ -8,6 +8,8 @@ import AddSteelgrade from '../Steelgrade/AddSteelgrade/AddSteelgrade'
 import AddAnalysis from '../Analysis/AddAnalysis/AddAnalysis'
 import Calculate from '../Analysis/Calculate/Calculate'
 import Homepage from '../Homepage/Homepage'
+import EditAlloy from '../Alloy/EditAlloy/EditAlloy'
+import Test from './Test'
 
 export default function MainContainer () {
   return (
@@ -18,6 +20,9 @@ export default function MainContainer () {
         </Route>
         <Route path='/alloy/delete'>
           <DeleteAlloy />
+        </Route>
+        <Route path='/alloy/edit/:name'>
+          <EditAlloy />
         </Route>
         <Route path='/alloy'>
           <Alloy />

@@ -5,7 +5,8 @@
   margin-top: 20px;
 }
 
-#confirm-edit-container button {
+#confirm-edit-container button,
+#confirm-edit-container a {
   background: #00b0ff;
   border: none;
   outline: none;
@@ -17,7 +18,12 @@
   transition: 0.5s;
 }
 
-#confirm-edit-container button:hover {
+#confirm-edit-container a {
+  text-decoration: none;
+}
+
+#confirm-edit-container button:hover,
+#confirm-edit-container a:hover {
   background: #0091d4;
   cursor: pointer;
   transition: 0.5s;
