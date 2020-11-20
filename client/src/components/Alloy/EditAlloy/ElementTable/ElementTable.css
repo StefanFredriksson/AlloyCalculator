@@ -9,11 +9,13 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 #element-information-container #element-table {
   border-spacing: 20px 5px;
   border-collapse: collapse;
+  min-width: 400px;
 }
 
 #element-information-container #element-table tr th {
@@ -66,7 +68,7 @@
 }
 
 #button-container #add-element-container .rotate-btn {
-  transform: rotate(135deg);
+  transform: translateX(25px) rotate(135deg);
 }
 
 #add-element-popup-container {

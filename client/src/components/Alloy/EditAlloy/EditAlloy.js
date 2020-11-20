@@ -89,12 +89,17 @@ export default function EditAlloy () {
         if (response.ok) {
           if (originalName !== tempAlloy.name) {
             setOriginalName(tempAlloy.name)
+            window.history.replaceState(
+              null,
+              null,
+              '/alloy/edit/' + tempAlloy.name
+            )
           }
         }
       })
   }
 
-  const addNewElement = event => {
+  const addNewElement = () => {
     const name = document.querySelector('#new-element-name')
     const value = document.querySelector('#new-element-value')
 
@@ -122,6 +127,7 @@ export default function EditAlloy () {
         elements={alloy.ElementList}
         removeElement={removeElement}
         addNewElement={addNewElement}
+        isEdit
       />
       <ConfirmEdit saveAlloy={saveAlloy} />
     </div>

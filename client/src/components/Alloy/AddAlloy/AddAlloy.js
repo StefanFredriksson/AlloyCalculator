@@ -1,52 +1,79 @@
-import React, { useState, useContext } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import './AddAlloy.css'
 import Element from './Element/Element'
+import ElementTable from '../EditAlloy/ElementTable/ElementTable'
+import ConfirmEdit from '../EditAlloy/ConfirmEdit/ConfirmEdit'
 import { FlashMessageContext, HostContext } from '../../../Store'
 
 let elements = []
 
 export default function AddAlloy () {
   const [count, setCount] = useState(0)
+  const [elements, setElements] = useState([])
   const [flash, setFlash] = useContext(FlashMessageContext)
   const [host] = useContext(HostContext)
 
-  const addElement = event => {
-    elements.push(0)
-    setCount(count + 1)
+  useEffect(() => {
+    setInputValues(elements)
+  }, [elements.join(',')])
+
+  const setInputValues = e => {
+    const table = document.querySelector('#element-table')
+    const names = table.querySelectorAll('.name')
+    const values = table.querySelectorAll('.value')
+    const btns = table.querySelectorAll('.delete-btn')
+
+    for (let i = 0; i < e.length; i++) {
+      names[i].value = e[i].name
+      values[i].value = e[i].value * 100
+      btns[i].value = e[i].name
+    }
+  }
+
+  const addNewElement = event => {
+    const name = document.querySelector('#new-element-name')
+    const value = document.querySelector('#new-element-value')
+
+    elements.push({
+      name: name.value,
+      value: parseFloat(value.value) / 100
+    })
+    setElements([...elements])
+
+    name.value = ''
+    value.value = ''
   }
 
   const removeElement = event => {
-    if (elements.length > 0) {
-      elements.pop()
-
-      setCount(count + 1)
-    }
+    const name = event.currentTarget.value
+    const temp = elements.filter(e => e.name !== name)
+    setElements([...temp])
   }
 
   const saveAlloy = event => {
-    const alloyName = document.querySelector('#alloy-name-input')
-    const price = document.querySelector('#alloy-price-input')
-    const elementDivs = document.querySelectorAll('.element-div')
-    const elementsToSave = []
+    const alloyName = document.querySelector('#name-input')
+    const alloyPrice = document.querySelector('#price-input')
+    const table = document.querySelector('#element-table')
+    const names = table.querySelectorAll('.name')
+    const values = table.querySelectorAll('.value')
+    const tempAlloy = {}
 
-    for (const div of elementDivs) {
-      const elementName = div.querySelector('.element-name').value
-      const elementValue = div.querySelector('.element-value').value
+    tempAlloy.name = alloyName.value
+    tempAlloy.price = parseFloat(alloyPrice.value)
+    tempAlloy.ElementList = []
 
-      if (elementName === '' || elementValue === '') {
-        continue
+    for (let i = 0; i < elements.length; i++) {
+      const v = parseFloat(values[i].value) / 100
+      const n = names[i].value
+
+      if (n === '' || isNaN(v)) {
+        return
       }
 
-      elementsToSave.push({
-        name: elementName,
-        value: parseFloat(elementValue) / 100
-      })
+      tempAlloy.ElementList.push({ name: n, value: v })
     }
-    const alloy = {
-      name: alloyName.value,
-      price: parseFloat(price.value),
-      elements: JSON.stringify(elementsToSave)
-    }
+
+    tempAlloy.elements = JSON.stringify(tempAlloy.ElementList)
 
     window
       .fetch(host + '/api/alloy', {
@@ -54,59 +81,39 @@ export default function AddAlloy () {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(alloy)
+        body: JSON.stringify(tempAlloy)
       })
       .then(response => {
         if (response.ok) {
+          setElements([])
           alloyName.value = ''
-          price.value = ''
-          elements = []
-          setCount(count + 1)
-          flash.visible = true
-          flash.message = 'Alloy saved!'
-          setFlash({ ...flash })
+          alloyPrice.value = ''
         }
       })
   }
 
   return (
-    <div id='alloy-container'>
-      <div id='add-alloy-container'>
-        <h1>Add Alloy</h1>
-        <div id='alloy-name-container'>
-          <input
-            type='text'
-            id='alloy-name-input'
-            placeholder='Name of alloy'
-          />
-          <input
-            type='number'
-            id='alloy-price-input'
-            placeholder='Price of alloy'
-          />
+    <div id='main-add-alloy-container'>
+      <div id='main-add-alloy-window'>
+        <h3>Add alloy</h3>
+        <div className='name-value-container'>
+          <div className='input-field'>
+            <input id='name-input' type='text' required />
+            <label>Alloy name</label>
+            <span />
+          </div>
+          <div className='input-field'>
+            <input id='price-input' type='number' step='any' min='0' required />
+            <label>Alloy price (kr/kg)</label>
+            <span />
+          </div>
         </div>
-        <div id='alloy-elements-container'>
-          <ul id='element-list'>
-            <li>
-              <label id='add-element-btn' onClick={addElement}>
-                <span>+</span>
-              </label>
-              <label id='remove-element-btn' onClick={removeElement}>
-                <span>-</span>
-              </label>
-            </li>
-            {elements.map(e => {
-              return (
-                <li>
-                  <Element />
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-        <button id='save-alloy' onClick={saveAlloy}>
-          Save alloy
-        </button>
+        <ElementTable
+          elements={elements}
+          addNewElement={addNewElement}
+          removeElement={removeElement}
+        />
+        <ConfirmEdit saveAlloy={saveAlloy} />
       </div>
     </div>
   )

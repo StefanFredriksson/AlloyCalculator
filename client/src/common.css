@@ -82,3 +82,27 @@
     inset 2px 2px 6px rgba(0, 0, 0, 0.8);
   border-radius: 15px;
 }
+
+/*Autocomplete*/
+#autocomplete {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  background: rgb(243, 243, 243);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2), 2px 2px 6px rgba(0, 0, 0, 0.2),
+    4px 4px 12px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  border-radius: 5px;
+}
+
+.autocomplete-item {
+  padding: 5px;
+}
+
+.autocomplete-item:hover,
+.current-focus {
+  background: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
