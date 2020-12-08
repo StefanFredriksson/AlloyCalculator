@@ -23,6 +23,9 @@ export default function Header () {
         <div className='dropdown'>
           <span>Steelgrade</span>
           <div className='dropdown-content'>
+            <Link to='/steelgrade' className='dropdown-link'>
+              Steelgrade
+            </Link>
             <Link to='/steelgrade/add' className='dropdown-link'>
               Add steelgrade
             </Link>

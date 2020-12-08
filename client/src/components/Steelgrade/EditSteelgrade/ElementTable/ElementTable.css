@@ -1,0 +1,35 @@
+#main-edit-steelgrade-container #elements-container {
+  height: 60%;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#main-edit-steelgrade-container #elements-container #element-table {
+  border-collapse: collapse;
+  margin-top: 10px;
+  width: 80%;
+}
+
+#main-edit-steelgrade-container #elements-container #element-table th {
+  background: #00b0ff;
+  color: white;
+  padding: 5px 0;
+}
+
+#main-edit-steelgrade-container #elements-container #element-table td input {
+  border: thin solid rgba(0, 0, 0, 0.2);
+  padding: 10px 5px;
+  outline: none;
+  transition: 0.5s;
+}
+
+#main-edit-steelgrade-container
+  #elements-container
+  #element-table
+  td
+  input:focus {
+  background: rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}

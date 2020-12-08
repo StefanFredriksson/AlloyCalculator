@@ -1,6 +1,6 @@
-#add-alloy-div {
-  width: 30%;
-  height: 70%;
+#edit-alloy-div {
+  width: 650px;
+  height: 750px;
   background: white;
   border-radius: 20px;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 8px 8px 24px rgba(0, 0, 0, 0.2),

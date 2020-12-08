@@ -19,6 +19,7 @@ export default function FlashMessage () {
     <div
       id='flash-message-container'
       style={{ visibility: flash.visible ? 'visible' : 'hidden' }}
+      className={flash.success ? 'successful-flash' : 'error-flash'}
     >
       <h3>{flash.message}</h3>
     </div>

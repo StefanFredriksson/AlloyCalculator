@@ -1,6 +1,13 @@
 export const autocomplete = (input, data) => {
   const auto = document.querySelector('#autocomplete')
 
+  auto.addEventListener('mousedown', event => {
+    event.preventDefault()
+    input.value = event.target.textContent
+    populate(data, event.target.textContent)
+    document.querySelector('.next-input').focus()
+  })
+
   input.addEventListener('focus', e => {
     auto.style.display = 'flex'
     populate(data, e.target.value)

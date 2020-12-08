@@ -1,0 +1,95 @@
+#main-steelgrade-container {
+  width: 600px;
+  height: 700px;
+  background: white;
+  border-radius: 40px;
+  padding: 20px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 8px 8px 24px rgba(0, 0, 0, 0.2),
+    16px 16px 48px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#main-steelgrade-container #options-container {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#main-steelgrade-container #options-container a {
+  text-decoration: none;
+  background: #00b0ff;
+  padding: 10px 10px;
+  border-radius: 5px;
+  color: white;
+  transition: 0.5s;
+}
+
+#main-steelgrade-container #options-container a:hover {
+  background: #0091d4;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+#main-steelgrade-container #steelgrade-information-container {
+  height: 70%;
+  width: 100%;
+  margin-top: 20px;
+}
+
+#main-steelgrade-container
+  #steelgrade-information-container
+  .steelgrade-edit-link {
+  text-decoration: none;
+  color: black;
+}
+
+#steelgrade-information-container .steelgrade-div {
+  width: 90%;
+  height: 8%;
+  padding: 10px;
+  border: thin solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-top: 10px;
+  transition: 0.5s;
+  display: flex;
+}
+
+#steelgrade-information-container .steelgrade-div:hover {
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+#steelgrade-information-container .steelgrade-div .steelgrade-name-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#steelgrade-information-container
+  .steelgrade-div
+  .steelgrade-name-container
+  .steelgrade-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#steelgrade-information-container
+  .steelgrade-div
+  .steelgrade-elements-container {
+  height: 100%;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#steelgrade-information-container
+  .steelgrade-div
+  .steelgrade-elements-container
+  label {
+  color: rgba(0, 0, 0, 0.5);
+}

@@ -1,4 +1,5 @@
 export const flash = {
   visible: false,
-  message: ''
+  message: '',
+  success: false
 }

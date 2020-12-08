@@ -1,47 +1,18 @@
 import './ElementTable.css'
 import React, { useState, useEffect } from 'react'
-import { elements } from '../../../../libs/data'
-import { autocomplete } from '../../../../helpers/autocompleteHelper'
+import AddElement from '../../../Common/AddAlloyElement'
 
 export default function ElementTable (props) {
   const [showPopUp, setShowPopUp] = useState(false)
-
-  useEffect(() => {
-    const input = document.querySelector('#new-element-name')
-    autocomplete(input, elements)
-  }, [])
+  const [firstRender, setFirstRender] = useState(true)
 
   useEffect(() => {
     if (showPopUp) {
-      document.querySelector('#new-element-name').focus()
+      document.querySelector('#new-alloy-element-name').focus()
     }
   }, [showPopUp])
 
-  useEffect(() => {
-    if (props.elements.length > 0 && props.isEdit) {
-      setup()
-    } else if (!props.isEdit) {
-      setup()
-    }
-  }, [props.elements.join(',')])
-
-  const setup = () => {
-    const value = document.querySelector('#new-element-value')
-    value.removeEventListener('keydown', autoAddElement, true)
-    value.addEventListener('keydown', autoAddElement, true)
-  }
-
-  const autoAddElement = e => {
-    if (e.keyCode === 9 || e.keyCode === 13) {
-      const name = document.querySelector('#new-element-name')
-
-      if (name.value !== '' && e.target.value !== '') {
-        e.preventDefault()
-        props.addNewElement()
-        name.focus()
-      }
-    }
-  }
+  useEffect(() => {}, [props.name])
 
   return (
     <div id='alloy-element-container'>
@@ -87,48 +58,7 @@ export default function ElementTable (props) {
           </tbody>
         </table>
       </div>
-      <div id='element-options-container'>
-        <div
-          id='add-element-popup-container'
-          style={{ display: showPopUp ? 'flex' : 'none' }}
-        >
-          <div className='name-value-container'>
-            <div className='input-field'>
-              <form autoComplete='off'>
-                <input id='new-element-name' type='text' required />
-                <label>Element name</label>
-                <span />
-              </form>
-              <div id='autocomplete' />
-            </div>
-            <div className='input-field'>
-              <input
-                id='new-element-value'
-                type='number'
-                step='any'
-                min='0'
-                required
-              />
-
-              <label>Element value</label>
-              <span />
-            </div>
-          </div>
-          <div id='confirmation-container'>
-            <button onClick={props.addNewElement}>Save</button>
-          </div>
-        </div>
-        <div id='button-container'>
-          <div id='add-element-container'>
-            <button
-              onClick={() => setShowPopUp(!showPopUp)}
-              className={showPopUp ? 'rotate-btn' : ''}
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
+      <AddElement addNewElement={props.addNewElement} />
     </div>
   )
 }

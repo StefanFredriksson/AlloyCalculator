@@ -83,6 +83,88 @@
   border-radius: 15px;
 }
 
+/*Input with label*/
+.input-field {
+  position: relative;
+  height: 30px;
+  width: 40%;
+}
+
+.smaller-input-field {
+  position: relative;
+  height: 30px;
+  width: 20%;
+}
+
+.input-field input,
+.smaller-input-field input {
+  position: absolute;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  font-size: 20px;
+  color: black;
+  width: 100%;
+}
+
+.input-field label,
+.smaller-input-field label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #555;
+  pointer-events: none;
+  display: block;
+  transition: 0.5s;
+}
+
+.input-field input:focus + label,
+.input-field input:valid + label,
+.smaller-input-field input:focus + label,
+.smaller-input-field input:valid + label {
+  transform: translateY(-110%);
+  font-size: 16px;
+  color: white;
+  background: #00b0ff;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.input-field span,
+.smaller-input-field span {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: block;
+  background: #555;
+  width: 100%;
+  height: 2px;
+}
+
+.input-field span:before,
+.smaller-input-field span:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #00b0ff;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s ease-in-out;
+}
+
+.input-field input:focus ~ span:before,
+.input-field input:valid ~ span:before,
+.smaller-input-field input:focus ~ span:before,
+.smaller-input-field input:valid ~ span:before {
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 0.5s ease-in-out;
+}
+
 /*Autocomplete*/
 #autocomplete {
   position: absolute;

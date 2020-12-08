@@ -3,13 +3,14 @@ import './MainContainer.css'
 import { Switch, Route } from 'react-router-dom'
 import Alloy from '../Alloy/Alloy'
 import AddAlloy from '../Alloy/AddAlloy/AddAlloy'
+import Steelgrade from '../Steelgrade/Steelgrade'
 import DeleteAlloy from '../Alloy/DeleteAlloy/DeleteAlloy'
 import AddSteelgrade from '../Steelgrade/AddSteelgrade/AddSteelgrade'
 import AddAnalysis from '../Analysis/AddAnalysis/AddAnalysis'
 import Calculate from '../Analysis/Calculate/Calculate'
 import Homepage from '../Homepage/Homepage'
 import EditAlloy from '../Alloy/EditAlloy/EditAlloy'
-import Test from './Test'
+import EditSteelgrade from '../Steelgrade/EditSteelgrade/EditSteelgrade'
 
 export default function MainContainer () {
   return (
@@ -29,6 +30,12 @@ export default function MainContainer () {
         </Route>
         <Route path='/steelgrade/add'>
           <AddSteelgrade />
+        </Route>
+        <Route path='/steelgrade/edit/:name'>
+          <EditSteelgrade />
+        </Route>
+        <Route path='/steelgrade'>
+          <Steelgrade />
         </Route>
         <Route path='/analysis/add'>
           <AddAnalysis />

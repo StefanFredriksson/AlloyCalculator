@@ -1,0 +1,18 @@
+#main-edit-steelgrade-container {
+  height: 700px;
+  width: 1000px;
+  background: white;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 8px 8px 24px rgba(0, 0, 0, 0.2),
+    16px 16px 48px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#main-edit-steelgrade-container #edit-steelgrade-name-container {
+  height: 10%;
+  width: 90%;
+  margin-top: 20px;
+}
