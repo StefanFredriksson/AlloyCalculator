@@ -44,31 +44,47 @@ namespace Steel_Analysis_API.Controllers
         }
 
         [HttpPost]
-        public String Post([FromBody] Alloy alloy)
+        public StatusCodeResult Post([FromBody] Alloy alloy)
         {
             con.Open();
             
             MySqlCommand cmd = new MySqlCommand($"insert into alloys (name, elements, price) " +
                 $"values (\"{alloy.name}\", \"{alloy.elements.Replace("\"", "'")}\", \"{alloy.price}\")", con);
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.ToUpper().Contains("DUPLICATE"))
+                    return StatusCode(409);
+            }
             cmd.Dispose();
             con.Close();
 
-            return "OK!";
+            return StatusCode(200);
         }
 
         [HttpPut]
-        public String Put([FromBody] PutAlloy putAlloy)
+        public StatusCodeResult Put([FromBody] PutAlloy putAlloy)
         {
             con.Open();
 
             MySqlCommand cmd = new MySqlCommand($"update alloys set name='{putAlloy.alloy.name}', price='{putAlloy.alloy.price}', elements='{putAlloy.alloy.elements}'" +
                 $" where name='{putAlloy.prevName}'", con);
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.ToUpper().Contains("DUPLICATE"))
+                    return StatusCode(409);
+            }
             cmd.Dispose();
             con.Close();
 
-            return "Ok!";
+            return StatusCode(200);
         }
 
         [HttpDelete]

@@ -1,0 +1,8 @@
+@media screen and (max-height: 820px) {
+  #main-alloy-container {
+    align-items: initial;
+  }
+  #content-container {
+    height: 90%;
+  }
+}

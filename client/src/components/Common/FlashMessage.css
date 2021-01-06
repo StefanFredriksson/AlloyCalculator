@@ -1,0 +1,23 @@
+.flash-message-container {
+  width: 50%;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.show-flash {
+  display: flex;
+}
+
+.hide-flash {
+  display: none;
+}
+
+.flash-success {
+  color: green;
+}
+
+.flash-error {
+  color: red;
+}

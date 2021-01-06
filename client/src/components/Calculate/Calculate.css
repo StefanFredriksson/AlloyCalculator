@@ -1,0 +1,71 @@
+#main-calculate-container {
+  height: 90%;
+  width: 70%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 20px;
+}
+
+#main-calculate-container #message-container {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#main-calculate-container #analysis-selection-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#main-calculate-container #analysis-selection-div .selection select,
+#main-calculate-container #analysis-selection-div .selection:before {
+  height: 45px;
+}
+
+#main-calculate-container #analysis-selection-div .selection:before {
+  line-height: 45px;
+}
+
+#main-calculate-container #result-container {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+}
+
+#main-calculate-container #result-container > div {
+  height: 97%;
+  width: 30%;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#main-calculate-container #result-container .element-table {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#main-calculate-container #result-container .alloy-element-table {
+  margin-top: 40px;
+}
+
+#main-calculate-container #result-container table {
+  border-collapse: collapse;
+  text-align: center;
+  width: 80%;
+}
+
+#main-calculate-container #result-container table th {
+  background: #00b0ff;
+  padding: 5px;
+  color: white;
+}

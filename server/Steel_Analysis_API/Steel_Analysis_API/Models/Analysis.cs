@@ -70,7 +70,7 @@ namespace Steel_Analysis_API.Models
             string print = "";
 
             print += "---------------------------------------\n";
-
+            print += $"Total price: {TotalPrice}\n";
             foreach (AnalysisElement ae in elementList)
             {
                 print += ae.ToString() + "\n";

@@ -11,14 +11,14 @@
   flex-direction: column;
 }
 
-#main-steelgrade-container #options-container {
+#options-container {
   width: 90%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-#main-steelgrade-container #options-container a {
+#options-container a {
   text-decoration: none;
   background: #00b0ff;
   padding: 10px 10px;
@@ -27,21 +27,20 @@
   transition: 0.5s;
 }
 
-#main-steelgrade-container #options-container a:hover {
+#options-container a:hover {
   background: #0091d4;
   cursor: pointer;
   transition: 0.5s;
 }
 
-#main-steelgrade-container #steelgrade-information-container {
-  height: 70%;
+#steelgrade-information-container {
+  height: 90%;
   width: 100%;
   margin-top: 20px;
+  overflow: auto;
 }
 
-#main-steelgrade-container
-  #steelgrade-information-container
-  .steelgrade-edit-link {
+#steelgrade-information-container .steelgrade-edit-link {
   text-decoration: none;
   color: black;
 }
@@ -52,16 +51,26 @@
   padding: 10px;
   border: thin solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  margin: 0 auto;
   margin-top: 10px;
   transition: 0.5s;
   display: flex;
+  position: relative;
 }
 
 #steelgrade-information-container .steelgrade-div:hover {
   background: rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: 0.5s;
+}
+
+#steelgrade-information-container .steelgrade-div label:hover {
+  cursor: pointer;
+}
+
+#steelgrade-information-container .steelgrade-div .position-right {
+  position: absolute;
+  right: 10px;
+  top: 0;
 }
 
 #steelgrade-information-container .steelgrade-div .steelgrade-name-container {

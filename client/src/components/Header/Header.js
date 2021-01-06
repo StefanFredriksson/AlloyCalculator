@@ -1,5 +1,6 @@
 import React from 'react'
 import './Header.css'
+import './Header_Responsive.css'
 import { Link } from 'react-router-dom'
 
 export default function Header () {
@@ -7,46 +8,29 @@ export default function Header () {
     <div id='header-container'>
       <div id='link-container'>
         <div className='dropdown'>
-          <span>Alloy</span>
-          <div className='dropdown-content'>
-            <Link to='/alloy' className='dropdown-link'>
-              Alloy
-            </Link>
-            <Link to='/alloy/add' className='dropdown-link'>
-              Add alloy
-            </Link>
-            <Link to='/alloy/delete' className='dropdown-link'>
-              Delete alloy
-            </Link>
-          </div>
+          <span>
+            <Link to='/'>Homepage</Link>
+          </span>
         </div>
         <div className='dropdown'>
-          <span>Steelgrade</span>
-          <div className='dropdown-content'>
-            <Link to='/steelgrade' className='dropdown-link'>
-              Steelgrade
-            </Link>
-            <Link to='/steelgrade/add' className='dropdown-link'>
-              Add steelgrade
-            </Link>
-            <Link to='#' className='dropdown-link'>
-              Delete steelgrade
-            </Link>
-          </div>
+          <span>
+            <Link to='/alloy'>Alloy</Link>
+          </span>
         </div>
         <div className='dropdown'>
-          <span>Analysis</span>
-          <div className='dropdown-content'>
-            <Link to='/analysis/add' className='dropdown-link'>
-              Add analysis
-            </Link>
-            <Link to='/analysis/calculate' className='dropdown-link'>
-              Calculate
-            </Link>
-            <Link to='#' className='dropdown-link'>
-              Delete analysis
-            </Link>
-          </div>
+          <span>
+            <Link to='/steelgrade'>Steelgrade</Link>
+          </span>
+        </div>
+        <div className='dropdown'>
+          <span>
+            <Link to='/analysis'>Analysis</Link>
+          </span>
+        </div>
+        <div className='dropdown'>
+          <span>
+            <Link to='/calculate'>Calculate</Link>
+          </span>
         </div>
       </div>
     </div>

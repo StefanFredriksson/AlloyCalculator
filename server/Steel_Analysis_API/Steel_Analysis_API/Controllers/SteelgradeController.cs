@@ -41,26 +41,54 @@ namespace Steel_Analysis_API.Controllers
         }
 
         [HttpPost]
-        public string Post([FromBody] Steelgrade steelgrade)
+        public StatusCodeResult Post([FromBody] Steelgrade steelgrade)
         {
             con.Open();
 
             MySqlCommand cmd = new MySqlCommand($"insert into steelgrades (name, elements) " +
                 $"values (\"{steelgrade.name}\", \"{steelgrade.elements.Replace("\"", "'")}\")", con);
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.ToUpper().Contains("DUPLICATE"))
+                    return StatusCode(409);
+            }
             cmd.Dispose();
             con.Close();
 
-            return "OK!";
+            return StatusCode(200);
         }
 
         [HttpPut]
-        public String Put([FromBody] PutSteelgrade putSteelgrade)
+        public StatusCodeResult Put([FromBody] PutSteelgrade putSteelgrade)
         {
             con.Open();
 
             MySqlCommand cmd = new MySqlCommand($"update steelgrades set name='{putSteelgrade.steelgrade.name}', elements='{putSteelgrade.steelgrade.elements}' " +
                 $"where name='{putSteelgrade.prevName}'", con);
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.ToUpper().Contains("DUPLICATE"))
+                    return StatusCode(409);
+            }
+            cmd.Dispose();
+            con.Close();
+
+            return StatusCode(200);
+        }
+
+        [HttpDelete]
+        public String Delete([FromBody] string steelgrade)
+        {
+            con.Open();
+            MySqlCommand cmd = new MySqlCommand($"delete from steelgrades where name='{steelgrade}'", con);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
             con.Close();

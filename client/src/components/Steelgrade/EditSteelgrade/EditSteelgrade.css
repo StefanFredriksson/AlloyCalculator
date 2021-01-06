@@ -11,8 +11,19 @@
   flex-direction: column;
 }
 
+#main-edit-steelgrade-container #name-message-container {
+  width: 90%;
+  margin: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
 #main-edit-steelgrade-container #edit-steelgrade-name-container {
   height: 10%;
-  width: 90%;
+  width: 50%;
   margin-top: 20px;
+}
+
+#main-edit-steelgrade-container #edit-steelgrade-name-container .input-field {
+  width: 80%;
 }

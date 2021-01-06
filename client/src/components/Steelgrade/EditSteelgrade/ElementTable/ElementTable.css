@@ -33,3 +33,10 @@
   background: rgba(0, 0, 0, 0.1);
   transition: 0.5s;
 }
+
+#main-edit-steelgrade-container
+  #elements-container
+  #element-table
+  .element-name {
+  font-weight: bold;
+}

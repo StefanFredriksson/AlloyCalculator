@@ -1,0 +1,37 @@
+@media screen and (max-height: 870px) {
+  #edit-alloy-div {
+    height: 90%;
+  }
+
+  #main-container {
+    align-items: initial;
+  }
+}
+
+@media screen and (max-width: 580px) {
+  #edit-alloy-div {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 490px) {
+  #element-information-container #element-table tr td input,
+  #element-information-container #element-table tr th {
+    width: 150px;
+  }
+
+  .delete-btn-container {
+    float: none;
+    margin-left: 10px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  #element-information-container #element-table {
+    margin-left: 140px;
+  }
+  #element-information-container #element-table tr td input,
+  #element-information-container #element-table tr th {
+    width: 100px;
+  }
+}

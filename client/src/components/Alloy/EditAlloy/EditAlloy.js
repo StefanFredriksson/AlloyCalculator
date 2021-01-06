@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import './EditAlloy.css'
+import './EditAlloy_Responsive.css'
 import AlloyNamePrice from './AlloyNamePrice/AlloyNamePrice'
 import ElementTable from './ElementTable/ElementTable'
 import ConfirmEdit from './ConfirmEdit/ConfirmEdit'
+import FlashMessage from '../../Common/FlashMessage'
 import { HostContext, FlashMessageContext } from '../../../Store'
 import { useParams } from 'react-router-dom'
 import {
@@ -26,7 +28,8 @@ class EditAlloy extends Component {
     this.saveAlloy = this.saveAlloy.bind(this)
     this.state = {
       originalName: '',
-      alloy: { name: '', ElementList: [] }
+      alloy: { name: '', ElementList: [] },
+      flashMessage: { message: '', show: false, success: false }
     }
   }
 
@@ -96,7 +99,11 @@ class EditAlloy extends Component {
     const tempAlloy = {}
 
     if (alloyName === '' || isNaN(alloyPrice)) {
-      //showErrorFlash(missingInputFields(), setFlash)
+      this.handleFlashMessage(
+        'Please make sure the alloy has a name and a price.',
+        true,
+        false
+      )
       return
     }
 
@@ -108,7 +115,7 @@ class EditAlloy extends Component {
       const n = names[i].value
 
       if (n === '' || isNaN(v)) {
-        //showErrorFlash(missingInputFields(), setFlash)
+        this.handleFlashMessage('Invalid element input values.', true, false)
         return
       }
 
@@ -129,15 +136,30 @@ class EditAlloy extends Component {
       })
       .then(response => {
         if (response.ok) {
-          //showSuccessFlash(alloyEditComplete(originalName), setFlash)
+          this.handleFlashMessage('Alloy was updated successfully!', true, true)
           if (this.state.originalName !== tempAlloy.name) {
-            this.setState({ originalName: tempAlloy.name })
+            this.setState({
+              originalName: tempAlloy.name,
+              alloy: { ...tempAlloy }
+            })
             window.history.replaceState(
               null,
               null,
               '/alloy/edit/' + tempAlloy.name
             )
           }
+        } else if (response.status === 409) {
+          this.handleFlashMessage(
+            'An alloy with the same name already exist.',
+            true,
+            false
+          )
+        } else {
+          this.handleFlashMessage(
+            'Something went wrong when updating the alloy.',
+            true,
+            false
+          )
         }
       })
   }
@@ -148,7 +170,7 @@ class EditAlloy extends Component {
     const alloy = this.copyAlloy()
 
     if (name.value === '' || value.value === '') {
-      //showErrorFlash(missingInputFields(), setFlash)
+      this.handleFlashMessage('Missing input field.', true, false)
       return
     }
 
@@ -157,7 +179,11 @@ class EditAlloy extends Component {
     )
 
     if (exists) {
-      //showErrorFlash(elementAlreadyExists(exists.name), setFlash)
+      this.handleFlashMessage(
+        'An element with the same name already exist.',
+        true,
+        false
+      )
       return
     }
 
@@ -170,6 +196,7 @@ class EditAlloy extends Component {
 
     name.value = ''
     value.value = ''
+    this.handleFlashMessage('', false, false)
   }
 
   removeElement (event) {
@@ -196,11 +223,18 @@ class EditAlloy extends Component {
     }
   }
 
+  handleFlashMessage (message, show, success) {
+    this.setState({ flashMessage: { message, show, success } })
+  }
+
   render () {
     return (
       <div id='edit-alloy-div'>
         <h3>Editing {this.state.originalName}</h3>
         <AlloyNamePrice alloy={this.state.alloy} />
+        <div id='message-div'>
+          <FlashMessage data={this.state.flashMessage} />
+        </div>
         <ElementTable
           elements={this.state.alloy.ElementList}
           removeElement={this.removeElement}

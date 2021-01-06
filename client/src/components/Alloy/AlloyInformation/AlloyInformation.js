@@ -1,4 +1,5 @@
 import './AlloyInformation.css'
+import './AlloyInformation_Responsive.css'
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { HostContext } from '../../../Store'

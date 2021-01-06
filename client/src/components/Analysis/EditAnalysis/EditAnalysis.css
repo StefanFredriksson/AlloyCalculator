@@ -1,0 +1,79 @@
+#main-edit-analysis-container {
+  height: 800px;
+  width: 1000px;
+  background: white;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 8px 8px 24px rgba(0, 0, 0, 0.2),
+    16px 16px 48px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#main-edit-analysis-container #name-weight-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 30px;
+}
+
+#main-edit-analysis-container #name-weight-container .input-field {
+  width: 25%;
+}
+
+#main-edit-analysis-container .selection {
+  margin-top: 20px;
+}
+
+#analysis-element-container {
+  margin-top: 20px;
+  height: 60%;
+  width: 90%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
+
+#analysis-element-container table {
+  border-collapse: collapse;
+}
+
+#analysis-element-container table th {
+  background: #00b0ff;
+  color: white;
+  padding: 5px 0;
+}
+
+#analysis-element-container table td {
+  width: 100px;
+  text-align: center;
+  font-size: 18px;
+}
+
+#analysis-element-container table .name {
+  font-weight: bold;
+}
+
+#analysis-element-container table td input {
+  width: 100%;
+  padding: 5px 5px;
+  border: thin solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  transition: 0.5s;
+  font-size: 18px;
+}
+
+#analysis-element-container table td input:focus {
+  background: rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}
+
+#message-selection-div {
+  width: 87.5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}

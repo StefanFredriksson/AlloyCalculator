@@ -1,13 +1,15 @@
 import React from 'react'
 import './MainContainer.css'
+import './MainContainer_Responsive.css'
 import { Switch, Route } from 'react-router-dom'
 import Alloy from '../Alloy/Alloy'
 import AddAlloy from '../Alloy/AddAlloy/AddAlloy'
 import Steelgrade from '../Steelgrade/Steelgrade'
-import DeleteAlloy from '../Alloy/DeleteAlloy/DeleteAlloy'
 import AddSteelgrade from '../Steelgrade/AddSteelgrade/AddSteelgrade'
 import AddAnalysis from '../Analysis/AddAnalysis/AddAnalysis'
-import Calculate from '../Analysis/Calculate/Calculate'
+import EditAnalysis from '../Analysis/EditAnalysis/EditAnalysis'
+import Analysis from '../Analysis/Analysis'
+import Calculate from '../Calculate/Calculate'
 import Homepage from '../Homepage/Homepage'
 import EditAlloy from '../Alloy/EditAlloy/EditAlloy'
 import EditSteelgrade from '../Steelgrade/EditSteelgrade/EditSteelgrade'
@@ -18,9 +20,6 @@ export default function MainContainer () {
       <Switch>
         <Route path='/alloy/add'>
           <AddAlloy />
-        </Route>
-        <Route path='/alloy/delete'>
-          <DeleteAlloy />
         </Route>
         <Route path='/alloy/edit/:name'>
           <EditAlloy />
@@ -40,8 +39,14 @@ export default function MainContainer () {
         <Route path='/analysis/add'>
           <AddAnalysis />
         </Route>
-        <Route path='/analysis/calculate'>
+        <Route path='/analysis/edit/:name'>
+          <EditAnalysis />
+        </Route>
+        <Route path='/calculate'>
           <Calculate />
+        </Route>
+        <Route path='/analysis'>
+          <Analysis />
         </Route>
         <Route path='/'>
           <Homepage />

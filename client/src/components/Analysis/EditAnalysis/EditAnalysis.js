@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import './AddAnalysis.css'
+import './EditAnalysis.css'
 import FlashMessage from '../../Common/FlashMessage'
 import ConfirmEdit from '../../Alloy/EditAlloy/ConfirmEdit/ConfirmEdit'
 import { HostContext } from '../../../Store'
 import { withRouter } from 'react-router-dom'
 
-export default class AddAnalysis extends Component {
+class EditAnalysis extends Component {
   static contextType = HostContext
 
   constructor (props) {
@@ -14,23 +14,58 @@ export default class AddAnalysis extends Component {
     this.saveAnalysis = this.saveAnalysis.bind(this)
 
     this.state = {
+      originalName: '',
+      analysis: {
+        name: '',
+        steelgrade: '',
+        weight: '',
+        maxWeight: '',
+        elementList: []
+      },
       steelgrades: [],
       steelgrade: { name: '', elementList: [] },
-      flashMessage: { message: '', success: false, show: false }
+      flashMessage: { message: '', success: false, show: false },
+      firstRender: true
     }
   }
 
   componentDidMount () {
-    this.getSteelgrade()
-    document
-      .querySelector('select')
-      .addEventListener('change', this.setNewSteelgrade)
+    this.setState({ originalName: this.props.match.params.name })
   }
 
   componentDidUpdate (prevProps, prevState) {
+    if (prevState.originalName === '' && this.state.originalName !== '') {
+      this.getAnalysis()
+      document
+        .querySelector('select')
+        .addEventListener('change', this.setNewSteelgrade)
+    }
+
+    if (
+      prevState.analysis.name !== this.state.analysis.name &&
+      this.state.firstRender
+    ) {
+      this.setState({ firstRender: false })
+      this.getSteelgrade()
+    }
+
     if (prevState.steelgrade.name !== this.state.steelgrade.name) {
       this.setInputValues()
     }
+  }
+
+  getAnalysis () {
+    const [host] = this.context
+
+    window
+      .fetch(`${host}/api/analysis?name=${this.state.originalName}`)
+      .then(response => {
+        if (response.ok) {
+          response.json().then(data => {
+            this.setState({ analysis: { ...data } })
+          })
+        }
+      })
   }
 
   getSteelgrade () {
@@ -40,7 +75,7 @@ export default class AddAnalysis extends Component {
       if (response.ok) {
         response.json().then(data => {
           this.setState({ steelgrades: [...data] })
-          const sg = data[0]
+          const sg = data.find(s => s.name === this.state.analysis.steelgrade)
           this.setState({ steelgrade: { ...sg } })
         })
       }
@@ -48,10 +83,24 @@ export default class AddAnalysis extends Component {
   }
 
   setInputValues () {
+    const name = document.querySelector('#name-input')
+    const weight = document.querySelector('#weight-input')
+    const maxWeight = document.querySelector('#max-weight-input')
     const actuals = document.querySelectorAll('.actual-input')
+    const analysis = { ...this.state.analysis }
 
-    for (const actual of actuals) {
-      actual.value = ''
+    if (name.value === '') name.value = analysis.name
+    if (weight.value === '') weight.value = analysis.weight
+    if (maxWeight.value === '') maxWeight.value = analysis.maxWeight
+
+    if (analysis.steelgrade === this.state.steelgrade.name) {
+      for (let i = 0; i < actuals.length; i++) {
+        actuals[i].value = (analysis.elementList[i].actual * 100).toFixed(2)
+      }
+    } else {
+      for (const actual of actuals) {
+        actual.value = ''
+      }
     }
   }
 
@@ -67,6 +116,7 @@ export default class AddAnalysis extends Component {
     const mins = document.querySelectorAll('.min')
     const aims = document.querySelectorAll('.aim')
     const maxs = document.querySelectorAll('.max')
+    const prevName = this.state.analysis.name
     const tempAnalysis = {}
 
     if (name === '' || isNaN(weight) || isNaN(maxWeight)) {
@@ -106,24 +156,28 @@ export default class AddAnalysis extends Component {
 
     window
       .fetch(`${host}/api/analysis`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(tempAnalysis)
+        body: JSON.stringify({ analysis: tempAnalysis, prevName })
       })
       .then(response => {
         if (response.ok) {
+          this.setState({
+            originalName: tempAnalysis.name,
+            analysis: { ...tempAnalysis }
+          })
+          window.history.replaceState(
+            null,
+            null,
+            '/analysis/edit' + tempAnalysis.name
+          )
           this.handleFlashMessage(
-            'Analysis was added successfully!',
+            'Analysis was updated successfully!',
             true,
             true
           )
-
-          document.querySelector('#name-input').value = ''
-          document.querySelector('#weight-input').value = ''
-          document.querySelector('#max-weight-input').value = ''
-          this.setInputValues()
         } else if (response.status === 409) {
           this.handleFlashMessage(
             'An analysis with the same name already exist.',
@@ -132,7 +186,7 @@ export default class AddAnalysis extends Component {
           )
         } else {
           this.handleFlashMessage(
-            'Something went wrong when adding the analysis.',
+            'Something went wrong when updating the analysis.',
             true,
             false
           )
@@ -153,7 +207,7 @@ export default class AddAnalysis extends Component {
   render () {
     return (
       <div id='main-edit-analysis-container'>
-        <h2>Add analysis</h2>
+        <h2>Editing analysis {this.state.originalName}</h2>
         <div id='name-weight-container'>
           <div className='input-field'>
             <input id='name-input' type='text' required />
@@ -187,7 +241,11 @@ export default class AddAnalysis extends Component {
           <div className='selection'>
             <select>
               {this.state.steelgrades.map(s => {
-                return <option>{s.name}</option>
+                if (s.name === this.state.analysis.steelgrade) {
+                  return <option selected>{s.name}</option>
+                } else {
+                  return <option>{s.name}</option>
+                }
               })}
             </select>
           </div>
@@ -237,3 +295,5 @@ export default class AddAnalysis extends Component {
     )
   }
 }
+
+export default withRouter(EditAnalysis)

@@ -51,7 +51,7 @@
 #alloys-container .alloy-div {
   padding: 10px;
   width: 90%;
-  height: 8%;
+  height: 50px;
   margin-top: 10px;
   border-radius: 10px;
   border: thin solid rgba(0, 0, 0, 0.1);
@@ -76,39 +76,4 @@
 
 #alloys-container .alloy-div .name-price-div .subtitle {
   margin-left: 20px;
-}
-
-.delete-btn-container {
-  float: right;
-  height: 100%;
-  width: 10%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.delete-btn-container .delete-btn {
-  height: 30px;
-  width: 30px;
-  border: none;
-  outline: none;
-  background: transparent;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  font-size: 22px;
-  color: rgba(0, 0, 0, 0.4);
-}
-
-.delete-btn-container .delete-btn {
-  transform: rotate(180deg);
-  transition: 0.5s;
-}
-
-.delete-btn-container .delete-btn:hover {
-  transform: rotate(0deg);
-  transition: 0.5s;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.05);
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './EditSteelgrade.css'
 import ElementTable from './ElementTable/ElementTable'
 import ConfirmEdit from '../../Alloy/EditAlloy/ConfirmEdit/ConfirmEdit'
+import FlashMessage from '../../Common/FlashMessage'
 import { HostContext } from '../../../Store'
 import { withRouter } from 'react-router-dom'
 
@@ -16,7 +17,8 @@ class EditSteelgrade extends Component {
     this.removeElement = this.removeElement.bind(this)
     this.state = {
       originalName: '',
-      steelgrade: { name: '', elementList: [] }
+      steelgrade: { name: '', elementList: [] },
+      flashMessage: { message: '', success: false, show: false }
     }
   }
 
@@ -68,9 +70,9 @@ class EditSteelgrade extends Component {
 
     for (let i = 0; i < steelgrade.elementList.length; i++) {
       names[i].value = steelgrade.elementList[i].name
-      mins[i].value = steelgrade.elementList[i].min * 100
-      aims[i].value = steelgrade.elementList[i].aim * 100
-      maxs[i].value = steelgrade.elementList[i].max * 100
+      mins[i].value = (steelgrade.elementList[i].min * 100).toFixed(2)
+      aims[i].value = (steelgrade.elementList[i].aim * 100).toFixed(2)
+      maxs[i].value = (steelgrade.elementList[i].max * 100).toFixed(2)
       btns[i].value = steelgrade.elementList[i].name
     }
   }
@@ -88,6 +90,8 @@ class EditSteelgrade extends Component {
       aim.value === '' ||
       max.value === ''
     ) {
+      this.handleFlashMessage('Missing input fields.', true, false)
+      return
     }
 
     const exists = steelgrade.elementList.find(
@@ -95,6 +99,12 @@ class EditSteelgrade extends Component {
     )
 
     if (exists) {
+      this.handleFlashMessage(
+        'Element with the same name already exists.',
+        true,
+        false
+      )
+      return
     }
 
     steelgrade.elementList.push({
@@ -110,6 +120,7 @@ class EditSteelgrade extends Component {
     min.value = ''
     aim.value = ''
     max.value = ''
+    this.handleFlashMessage('', false, false)
   }
 
   saveSteelgrade () {
@@ -124,6 +135,11 @@ class EditSteelgrade extends Component {
     const tempSteelgrade = {}
 
     if (sgName === '') {
+      this.handleFlashMessage(
+        'Please enter a name for the steelgrade.',
+        true,
+        false
+      )
       return
     }
 
@@ -137,6 +153,7 @@ class EditSteelgrade extends Component {
       const max = parseFloat(maxs[i].value) / 100
 
       if (name === '' || isNaN(min) || isNaN(aim) || isNaN(max)) {
+        this.handleFlashMessage('Invalid element names or values.', true, false)
         return
       }
 
@@ -158,13 +175,33 @@ class EditSteelgrade extends Component {
       .then(response => {
         if (response.ok) {
           if (this.state.originalName !== tempSteelgrade.name) {
-            this.setState({ originalName: tempSteelgrade.name })
+            this.handleFlashMessage(
+              'Steelgrade was updated successfully!',
+              true,
+              true
+            )
+            this.setState({
+              originalName: tempSteelgrade.name,
+              steelgrade: { ...tempSteelgrade }
+            })
             window.history.replaceState(
               null,
               null,
               '/steelgrade/edit/' + tempSteelgrade.name
             )
           }
+        } else if (response.status === 409) {
+          this.handleFlashMessage(
+            'A steelgrade with the same name already exist.',
+            true,
+            false
+          )
+        } else {
+          this.handleFlashMessage(
+            'Something went wrong when updating the steelgrade.',
+            true,
+            false
+          )
         }
       })
   }
@@ -193,21 +230,29 @@ class EditSteelgrade extends Component {
     return steelgrade
   }
 
+  handleFlashMessage (message, show, success) {
+    this.setState({ flashMessage: { message, success, show } })
+  }
+
   render () {
     return (
       <div id='main-edit-steelgrade-container'>
         <h2>Editing steelgrade {this.state.originalName}</h2>
-        <div id='edit-steelgrade-name-container'>
-          <div className='input-field'>
-            <input id='name-input' type='text' required />
-            <label>Steelgrade name</label>
-            <span />
+        <div id='name-message-container'>
+          <div id='edit-steelgrade-name-container'>
+            <div className='input-field'>
+              <input id='name-input' type='text' required />
+              <label>Steelgrade name</label>
+              <span />
+            </div>
           </div>
+          <FlashMessage data={this.state.flashMessage} />
         </div>
         <ElementTable
           elements={this.state.steelgrade.elementList}
           removeElement={this.removeElement}
           addNewElement={this.addNewElement}
+          flash={this.handleFlashMessage}
         />
         <ConfirmEdit save={this.saveSteelgrade} link='/steelgrade' />
       </div>

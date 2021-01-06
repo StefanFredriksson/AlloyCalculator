@@ -3,6 +3,8 @@ import './AddAlloy.css'
 import Element from './Element/Element'
 import ElementTable from '../EditAlloy/ElementTable/ElementTable'
 import ConfirmEdit from '../EditAlloy/ConfirmEdit/ConfirmEdit'
+import AlloyNamePrice from '../EditAlloy/AlloyNamePrice/AlloyNamePrice'
+import FlashMessage from '../../Common/FlashMessage'
 import { FlashMessageContext, HostContext } from '../../../Store'
 import { alloyAddComplete } from '../../../view/successFlashMessages'
 import {
@@ -24,7 +26,8 @@ export default class AddAlloy extends Component {
     this.autoAddElement = this.autoAddElement.bind(this)
     this.saveAlloy = this.saveAlloy.bind(this)
     this.state = {
-      elements: []
+      elements: [],
+      flashMessage: { message: '', show: false, success: false }
     }
   }
 
@@ -59,7 +62,7 @@ export default class AddAlloy extends Component {
     const elements = [...this.state.elements]
 
     if (name.value === '' || value.value === '') {
-      //showErrorFlash(missingInputFields(), setFlash)
+      this.handleFlashMessage('Missing input field.', true, false)
       return
     }
 
@@ -68,7 +71,11 @@ export default class AddAlloy extends Component {
     )
 
     if (exists) {
-      //showErrorFlash(elementAlreadyExists(exists.name), setFlash)
+      this.handleFlashMessage(
+        'An element with the same name already exist.',
+        true,
+        false
+      )
       return
     }
 
@@ -80,6 +87,7 @@ export default class AddAlloy extends Component {
 
     name.value = ''
     value.value = ''
+    this.handleFlashMessage('', false, false)
   }
 
   removeElement (event) {
@@ -100,7 +108,11 @@ export default class AddAlloy extends Component {
     const elements = [...this.state.elements]
 
     if (alloyName.value === '' || alloyPrice.value === '') {
-      //showErrorFlash(missingInputFields(), setFlash)
+      this.handleFlashMessage(
+        'Please make sure the alloy has a name and a price.',
+        true,
+        false
+      )
       return
     }
 
@@ -113,7 +125,7 @@ export default class AddAlloy extends Component {
       const n = names[i].value
 
       if (n === '' || isNaN(v)) {
-        //showErrorFlash(missingInputFields(), setFlash)
+        this.handleFlashMessage('Invalid element input values.', true, false)
         return
       }
 
@@ -134,10 +146,22 @@ export default class AddAlloy extends Component {
       })
       .then(response => {
         if (response.ok) {
-          //showSuccessFlash(alloyAddComplete(tempAlloy.name), setFlash)
+          this.handleFlashMessage('Alloy was updated successfully!', true, true)
           this.setState({ elements: [] })
           alloyName.value = ''
           alloyPrice.value = ''
+        } else if (response.status === 409) {
+          this.handleFlashMessage(
+            'An alloy with the same name already exist.',
+            true,
+            false
+          )
+        } else {
+          this.handleFlashMessage(
+            'Something went wrong when updating the alloy.',
+            true,
+            false
+          )
         }
       })
   }
@@ -151,28 +175,18 @@ export default class AddAlloy extends Component {
     }
   }
 
+  handleFlashMessage (message, show, success) {
+    this.setState({ flashMessage: { message, show, success } })
+  }
+
   render () {
     return (
       <div id='main-add-alloy-container'>
         <div id='main-add-alloy-window'>
           <h3>Add alloy</h3>
-          <div className='name-value-container'>
-            <div className='input-field'>
-              <input id='name-input' type='text' required />
-              <label>Alloy name</label>
-              <span />
-            </div>
-            <div className='input-field'>
-              <input
-                id='price-input'
-                type='number'
-                step='any'
-                min='0'
-                required
-              />
-              <label>Alloy price (kr/kg)</label>
-              <span />
-            </div>
+          <AlloyNamePrice alloy={{ name: '', price: '' }} />
+          <div id='message-div'>
+            <FlashMessage data={this.state.flashMessage} />
           </div>
           <ElementTable
             elements={this.state.elements}

@@ -358,77 +358,215 @@ namespace Steel_Analysis_API.Models
             return analysis;
         }
 
-        public static void CalculateUsingAllCombinations(Analysis analysis, List<Alloy> alloys)
+        private static List<Alloy> FilterAlloys(Analysis analysis, List<Alloy> alloys)
         {
-            AddIron(analysis);
+            List<Alloy> filtered = new List<Alloy>();
 
-            foreach (AnalysisElement analysisElement in analysis.elementList)
+            foreach (Alloy alloy in alloys)
             {
-                if (analysisElement.actual < analysisElement.min && analysisElement.name != "Fe")
+                if (alloy.name == "Fe-base")
+                    filtered.Add(alloy);
+                else
                 {
-                    List<Alloy> allowedAlloys = alloys.FindAll(a => a.ElementList.Any(ae => ae.name == analysisElement.name /*&& ae.value >= 0.6*/));
-                    Console.WriteLine(allowedAlloys.Count);
-                    RecursiveCalc(allowedAlloys, new List<AddedAlloy>(), analysisElement, analysisElement, analysis.DeepCopy());
+                    foreach (AlloyElement ae in alloy.ElementList)
+                    {
+                        if (ae.name != "Fe" && analysis.elementList.Find(element => element.name == ae.name) != null)
+                        {
+                            filtered.Add(alloy);
+                            break;
+                        }
+                    }
                 }
             }
 
-            Console.WriteLine("-------------------------------------------------------\n" + triedAnalysis.Count);
+            return filtered;
         }
 
-        private static void RecursiveCalc(List<Alloy> alloys, List<AddedAlloy> partial, AnalysisElement analysisElement, AnalysisElement previous, Analysis analysis)
+        static long cnt = 0;
+        static double minPrice = 0;
+
+        public static Analysis CalculateUsingAllCombinations(Analysis analysis, List<Alloy> alloys)
         {
-            double add = 0.1;
-            double sum = 0;
-            AnalysisElement temp = analysisElement.DeepCopy();
+            cnt = 0;
+            Analysis temp = analysis.DeepCopy();
+            Analysis baseline = BeginCheapestCalculation(temp, alloys);
+            minPrice = baseline.TotalPrice;
+            AddIron(analysis);
+            List<Alloy> filtered = FilterAlloys(analysis, alloys);
+            RecursiveCalc(analysis, alloys);
+            double min = Double.MaxValue;
+            Analysis cheapest = null;
 
-            /*foreach (AddedAlloy addedAlloy in partial)
-            {
-                sum = addedAlloy.Weight * alloys.Find(alloy => alloy.name == addedAlloy.name).ElementList.Find(element => element.name == analysisElement.name).value;
-            }*/
+            Console.WriteLine($"{baseline.TotalPrice}  {triedAnalysis.Count}");
 
-            double previousDistance = previous.actual > previous.aim ? previous.actual - previous.aim : previous.aim - previous.actual;
-            double currentDistance = analysisElement.actual > analysisElement.aim ? analysisElement.actual - analysisElement.aim : analysisElement.aim - analysisElement.actual;
+            if (triedAnalysis.Count == 0)
+                return baseline;
 
-            if (analysisElement.actual >= analysisElement.min && analysisElement.actual <= analysisElement.max)
+            foreach (Analysis a in triedAnalysis)
             {
-                triedAnalysis.Add(analysis.DeepCopy());
-                return;
-            } else if (analysisElement.actual >= analysisElement.max || currentDistance > previousDistance)
+                Console.WriteLine(a.ToString());
+                if (AnalysisFinished(a) && a.TotalPrice < min)
+                {
+                    cheapest = a;
+                    min = a.TotalPrice;
+                }
+            }
+
+            return cheapest;
+        }
+
+        private static bool AnalysisFinished(Analysis analysis)
+        {
+            foreach (AnalysisElement ae in analysis.elementList)
             {
+                if (ae.actual < ae.min || ae.actual > ae.max)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static void AddAlloyRec(Analysis analysis, Alloy alloy, double weightToAdd)
+        {
+            analysis.weight += weightToAdd;
+            cnt++;
+
+            if (cnt % 1000000 == 0)
+                Console.WriteLine(cnt / 1000000);
+
+            List<ElementWithin> within = new List<ElementWithin>();
+
+            foreach (AlloyElement alloyElement in alloy.ElementList)
+            {
+
+                AnalysisElement ae = analysis.elementList.Find(element => element.name == alloyElement.name);
+
+                if (ae != null)
+                {
+                    if (ae.name != "Fe")
+                    {
+                        int aboveOrBelow = 0;
+
+                        if (ae.actual < ae.min)
+                            aboveOrBelow = -1000;
+                        else if (ae.actual > ae.max)
+                            aboveOrBelow = 1000;
+                        within.Add(new ElementWithin(ae.name, (ae.actual >= ae.min && ae.actual <= ae.max), aboveOrBelow));
+                    }
+
+                    ae.weight += weightToAdd * alloyElement.value;
+                }
+            }
+            
+            foreach (AnalysisElement ae in analysis.elementList)
+                ae.actual = ae.weight / analysis.weight;
+
+
+            if (weightToAdd == 1)
+            {
+                foreach (ElementWithin ew in within)
+                {
+                    AnalysisElement ae = analysis.elementList.Find(element => element.name == ew.name);
+
+                    if (ae != null)
+                    {
+                        if (!ew.within && ((ae.actual >= ae.min && ae.actual <= ae.max) || (ae.actual > ae.max && ew.aboveOrBelow < 0) || (ae.actual < ae.min && ew.aboveOrBelow > 0)))
+                        {
+                            analysis.weight -= weightToAdd;
+
+                            foreach (AlloyElement alloyElement in alloy.ElementList)
+                            {
+                                AnalysisElement analysisElement = analysis.elementList.Find(element => element.name == alloyElement.name);
+
+                                if (analysisElement != null)
+                                {
+                                    analysisElement.weight -= weightToAdd * alloyElement.value;
+                                }
+                            }
+
+                            foreach (AnalysisElement analysisElement in analysis.elementList)
+                                analysisElement.actual = analysisElement.weight / analysis.weight;
+
+                            AddAlloyRec(analysis, alloy, weightToAdd / 10);
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            AddedAlloy addedAlloy = analysis.addedAlloys.Find(aa => aa.name == alloy.name);
+
+            if (addedAlloy != null)
+            {
+                addedAlloy.AddWeight = weightToAdd;
+            } else
+            {
+                addedAlloy = new AddedAlloy(alloy.name, alloy.price);
+                addedAlloy.AddWeight = weightToAdd;
+                analysis.addedAlloys.Add(addedAlloy);
+            }
+        }
+
+        private static void RecursiveCalc(Analysis analysis, List<Alloy> alloys)
+        {
+            //Console.WriteLine($"Weight: {analysis.weight}\t Max weight: {analysis.maxWeight}");
+            if (AnalysisFinished(analysis))
+            {
+                if (analysis.TotalPrice < minPrice)
+                    minPrice = analysis.TotalPrice;
+
+                triedAnalysis.Add(analysis);
                 return;
             }
+
+            if (analysis.weight >= analysis.maxWeight || analysis.TotalPrice > minPrice)
+                return;
 
             for (int i = 0; i < alloys.Count; i++)
             {
                 List<Alloy> remaining = new List<Alloy>();
                 Alloy alloy = alloys[i];
 
+                /*if ((alloy.name != "Fe-base" && AllowMin(analysis, alloy)) || (alloy.name == "Fe-base" && AllowMax(analysis)))
+                    AddAlloyRec(analysis, alloy, 1);
+                else
+                    continue;*/
+                AddAlloyRec(analysis, alloy, 10);
+
                 for (int j = i; j < alloys.Count; j++)
                     remaining.Add(alloys[j]);
 
-                List<AddedAlloy> partial_rec = new List<AddedAlloy>(partial);
-                AddedAlloy addedAlloy = new AddedAlloy(alloy.name, alloy.price);
-                addedAlloy.Weight = add;
-                analysis.weight += add;
-                Console.WriteLine(analysis);
-                Thread.Sleep(1000);
-                partial_rec.Add(addedAlloy);
-
-                foreach (AnalysisElement ae in analysis.elementList)
-                {
-                    foreach (AlloyElement alloyElement in alloy.ElementList)
-                    {
-                        if (alloyElement.name == ae.name)
-                        {
-                            ae.weight += add * alloyElement.value;
-                        }
-                    }
-
-                    ae.actual = ae.weight / analysis.weight;
-                }
-
-                RecursiveCalc(remaining, partial_rec, analysisElement, temp, analysis.DeepCopy());
+                Analysis analysis_rec = analysis.DeepCopy();
+                RecursiveCalc(analysis_rec, remaining);
             }
+        }
+
+        private static bool AllowMin(Analysis analysis, Alloy alloy)
+        {
+            foreach (AlloyElement alloyElement in alloy.ElementList)
+            {
+                if (alloyElement.name == "fe")
+                    continue;
+
+                AnalysisElement analysisElement = analysis.elementList.Find(element => element.name == alloyElement.name);
+
+                if (analysisElement != null && analysisElement.actual < analysisElement.min)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool AllowMax(Analysis analysis)
+        {
+            foreach (AnalysisElement ae in analysis.elementList)
+            {
+                if (ae.actual > ae.max)
+                    return true;
+            }
+
+            return false;
         }
 
         private static double CalculatePoints(Analysis temp, Analysis original, Alloy alloy, AnalysisElement analysisElement)

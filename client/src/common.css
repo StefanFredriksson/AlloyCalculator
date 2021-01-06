@@ -1,3 +1,18 @@
+/*Scrollbar*/
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(transparent, #004e92);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(transparent, #004e92);
+  border-radius: 6px;
+}
+
 /*Radio button*/
 .radio-btn-container {
   position: relative;
@@ -187,4 +202,103 @@
 .current-focus {
   background: rgba(0, 0, 0, 0.1);
   cursor: pointer;
+}
+
+/*Delete button*/
+.delete-btn-container {
+  float: right;
+  height: 100%;
+  width: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn-container .delete-btn {
+  height: 30px;
+  width: 30px;
+  border: none;
+  outline: none;
+  background: transparent;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  font-size: 22px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.delete-btn-container .delete-btn {
+  transform: rotate(180deg);
+  transition: 0.5s;
+}
+
+.delete-btn-container .delete-btn:hover {
+  transform: rotate(0deg);
+  transition: 0.5s;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/*Select*/
+.selection {
+  position: relative;
+}
+
+.selection select {
+  background: #0563af;
+  color: white;
+  padding: 10px;
+  width: 200px;
+  height: 40px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+  -webkit-appearance: button;
+  outline: none;
+}
+
+.selection:before {
+  content: '\f358';
+  font-family: 'Font Awesome 5 Free';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  color: white;
+  font-size: 28px;
+  background: #007ce0;
+  pointer-events: none;
+}
+
+.selection select:hover {
+  cursor: pointer;
+}
+
+.selection:hover:before {
+  background: #0472ca;
+}
+
+/*Regular button*/
+.regular-button {
+  background: #00b0ff;
+  border: none;
+  outline: none;
+  padding: 15px 20px;
+  margin-left: 10px;
+  color: white;
+  border-radius: 10px;
+  font-size: 20px;
+  transition: 0.5s;
+  text-decoration: none;
+}
+
+.regular-button:hover {
+  background: #0091d4;
+  cursor: pointer;
+  transition: 0.5s;
 }
