@@ -35,7 +35,9 @@ export default function Analysis (props) {
               return (
                 <tr>
                   <td>{e.name}</td>
-                  <td>{(e.actual * 100).toFixed(2)}%</td>
+                  <td className='actual-analysis'>
+                    {(e.actual * 100).toFixed(2)}%
+                  </td>
                   <td>{(e.min * 100).toFixed(2)}%</td>
                   <td>{(e.aim * 100).toFixed(2)}%</td>
                   <td>{(e.max * 100).toFixed(2)}%</td>

@@ -43,5 +43,10 @@ namespace Steel_Analysis_API.Models
                 return price * Weight;
             }
         }
+
+        public override string ToString()
+        {
+            return $"Name: {name} \t Price: {price} \t Weight: {weight}";
+        }
     }
 }

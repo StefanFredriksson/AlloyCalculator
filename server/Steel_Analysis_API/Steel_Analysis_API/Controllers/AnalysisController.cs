@@ -121,8 +121,10 @@ namespace Steel_Analysis_API.Controllers
             List<Alloy> alloys = AlloyController.GetAlloys(con, cmd);
             //Analysis cheapest = Logic.TestAlloy(analysis, alloys);
             //Analysis cheapest = Logic.BeginSimpleCalculation(analysis.DeepCopy(), alloys);
-            Analysis cheapest = Logic.BeginCheapestCalculation(analysis, alloys);
-            //Analysis cheapest = Logic.CalculateUsingAllCombinations(analysis, alloys);
+            //Analysis cheapest = Logic.BeginCheapestCalculation(analysis, alloys, 0.12);
+            Analysis cheapest = Logic.CalculateUsingAllCombinations(analysis, alloys);
+            //Analysis cheapest = Logic.AllCombinations(analysis, alloys);
+            //Analysis cheapest = Logic.BeginMultipleCheapestCalculations(analysis, alloys);
 
             Console.WriteLine("------------------------\nFINISHED\n------------------------------");
             //Console.WriteLine(cheapest.TotalPrice);

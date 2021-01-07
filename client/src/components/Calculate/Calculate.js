@@ -69,7 +69,18 @@ export default class Calculate extends Component {
       a => a.name === event.target.value
     )
 
-    this.setState({ analysis: { ...analysis } })
+    this.setState({
+      analysis: { ...analysis },
+      finalAnalysis: {
+        name: '',
+        weight: 0,
+        maxWeight: 0,
+        steelgrade: '',
+        addedAlloys: [],
+        elementList: [],
+        TotalPrice: 0
+      }
+    })
     this.handleFlashMessage('', false, false)
   }
 

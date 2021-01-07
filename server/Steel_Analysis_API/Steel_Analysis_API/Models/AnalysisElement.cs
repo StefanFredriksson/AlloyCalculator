@@ -22,7 +22,7 @@ namespace Steel_Analysis_API.Models
 
         public override string ToString()
         {
-            return $"Name: {name}\t min: {min}\t aim: {aim}\t max: {max}\t actual: {Math.Round(actual, 4)}\t weight: {Math.Round(weight)}";
+            return $"Name: {name}\t min: {min}\t aim: {aim}\t max: {max}\t actual: {Math.Round(actual, 4)}\t weight: {weight}";
         }
 
         public AnalysisElement DeepCopy()

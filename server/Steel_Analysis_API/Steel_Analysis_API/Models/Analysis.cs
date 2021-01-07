@@ -77,6 +77,14 @@ namespace Steel_Analysis_API.Models
             }
 
             print += "---------------------------------------";
+            print += "ADDED ALLOYS\n";
+
+            foreach (AddedAlloy alloy in addedAlloys)
+            {
+                print += alloy.ToString() + "\n";
+            }
+
+            print += "---------------------------------------";
 
             return print;
         }

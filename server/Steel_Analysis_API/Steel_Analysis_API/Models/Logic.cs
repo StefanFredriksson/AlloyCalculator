@@ -35,7 +35,7 @@ namespace Steel_Analysis_API.Models
                             {
                                 Analysis tempAnalysis = analysis.DeepCopy();
                                 //Console.WriteLine("Before: " + tempAnalysis.TotalPrice);
-                                AddAlloy(a, e, tempAnalysis);
+                                AddAlloy(a, e, tempAnalysis, 0.1);
                                 //Console.WriteLine("After: " + tempAnalysis.TotalPrice);
                                 //Console.WriteLine("--------------------------------------");
                                 /*Console.WriteLine("--------------------------------------");
@@ -154,7 +154,7 @@ namespace Steel_Analysis_API.Models
                                     ae.actual = ae.weight / tempAnalysis.weight;
                                 }
 
-                                double points = CalculatePoints(tempAnalysis, analysis, alloy, analysisElement);
+                                double points = CalculatePoints(tempAnalysis, analysis, alloy, analysisElement, alloys);
                                 /*for (int i = 0; i < tempAnalysis.elementList.Count; i++)
                                 {
                                     if (tempAnalysis.elementList[i].name == "Fe")
@@ -219,21 +219,21 @@ namespace Steel_Analysis_API.Models
             return analysis;
         }
 
-        private static double AddAlloy(Alloy a, AnalysisElement e, Analysis analysis)
+        private static double AddAlloy(Alloy a, AnalysisElement e, Analysis analysis, double weight)
         {
             //double weightToAdd = analysis.weight * (e.aim - e.actual);
-            double weightToAdd = 0.1;
+            double weightToAdd = 0.12;
             double alloyWeightToAdd = 0;
 
-            foreach (AlloyElement ae in a.ElementList)
+            /*foreach (AlloyElement ae in a.ElementList)
             {
                 if (ae.name == e.name)
                 {
-                    alloyWeightToAdd = weightToAdd / ae.value;
+                    alloyWeightToAdd = weight / ae.value;
                 }
-            }
+            }*/
 
-            analysis.weight += alloyWeightToAdd;
+            analysis.weight += weight;
 
             foreach (AnalysisElement analysisE in analysis.elementList)
             {
@@ -241,34 +241,32 @@ namespace Steel_Analysis_API.Models
                 {
                     if (analysisE.name == ae.name)
                     {
-                        analysisE.weight += ae.value * alloyWeightToAdd;
+                        analysisE.weight += ae.value * weight;
                     }
                 }
 
                 analysisE.actual = analysisE.weight / analysis.weight;
             }
 
-            /*\frac{\left(0.1\ +\ 0.0005\cdot \left(1000\ +\ x\right)\right)}{\left(1000\ +\ x\right)}=0.018*/
-
             AddedAlloy addedAlloy = analysis.addedAlloys.Find(aa => aa.name == a.name);
 
             if (addedAlloy != null)
             {
-                addedAlloy.AddWeight = alloyWeightToAdd;
+                addedAlloy.AddWeight = weight;
             } else
             {
                 AddedAlloy aa = new AddedAlloy(a.name, a.price);
-                aa.AddWeight = weightToAdd;
+                aa.AddWeight = weight;
                 analysis.addedAlloys.Add(aa);
             }
 
-            return alloyWeightToAdd;
+            return weight;
         }
 
         private static double AddFeBase(AnalysisElement e, Alloy feBase, Analysis analysis)
         {
             //double weightToAdd = analysis.weight * ((e.actual - e.aim) * 100);
-            double weightToAdd = 1;
+            double weightToAdd = 0.1;
             analysis.weight += weightToAdd;
 
             foreach (AnalysisElement ae in analysis.elementList)
@@ -300,10 +298,35 @@ namespace Steel_Analysis_API.Models
             return weightToAdd;
         }
 
-        public static Analysis BeginCheapestCalculation(Analysis analysis, List<Alloy> alloys)
+        public static Analysis BeginMultipleCheapestCalculations(Analysis analysis, List<Alloy> alloys)
+        {
+            double weight = 0.001, increment = weight, min = double.MaxValue;
+            int round = 3;
+            Analysis cheapest = null;
+
+            while (weight <= 1)
+            {
+                Analysis temp = analysis.DeepCopy();
+                Analysis suggested = BeginCheapestCalculation(temp, alloys, Math.Round(weight, round));
+                //Console.WriteLine(suggested.TotalPrice);
+                if (suggested.TotalPrice < min)
+                {
+                    min = suggested.TotalPrice;
+                    Console.WriteLine(min);
+                    cheapest = suggested.DeepCopy();
+                }
+
+                weight += increment;
+            }
+
+            return cheapest;
+        }
+
+        public static Analysis BeginCheapestCalculation(Analysis analysis, List<Alloy> als, double weight)
         {
             AddIron(analysis);
             int counter = 0;
+            List<Alloy> alloys = FilterAlloys(analysis, als);
 
             while (counter < analysis.elementList.Count)
             {
@@ -313,7 +336,7 @@ namespace Steel_Analysis_API.Models
                 foreach (AnalysisElement analysisElement in analysis.elementList)
                 {
                     if ((analysisElement.actual < analysisElement.min/* || analysisElement.aim - analysisElement.actual > (analysisElement.aim - analysisElement.min) / 2*/) && 
-                            analysisElement.name != "Fe")
+                            analysisElement.name.ToUpper() != "FE")
                     {
                         Analysis cheapest = analysis.DeepCopy();
                         double minPoints = Double.MaxValue;
@@ -321,12 +344,15 @@ namespace Steel_Analysis_API.Models
 
                         foreach (Alloy alloy in alloys)
                         {
+                            if (alloy.name.ToUpper() == "FE-BASE")
+                                continue;
+
                             Analysis temp = analysis.DeepCopy();
 
                             if (alloy.ElementList.Any(a => a.name == analysisElement.name))
                             {
-                                AddAlloy(alloy, analysisElement, temp);
-                                double points = CalculatePoints(temp, analysis, alloy, analysisElement);
+                                AddAlloy(alloy, analysisElement, temp, weight);
+                                double points = CalculatePoints(temp, analysis, alloy, analysisElement, alloys);
 
                                 if (points < minPoints)
                                 {
@@ -339,18 +365,31 @@ namespace Steel_Analysis_API.Models
 
                         analysis = cheapest;
                         counter = 0;
-                    }
-                    else if ((analysisElement.actual > analysisElement.max/* || analysisElement.actual - analysisElement.aim > (analysisElement.max - analysisElement.aim) / 2*/) && 
-                        analysisElement.name != "Fe")
-                    {
-                        Alloy feBase = alloys.Find(a => a.name == "Fe-base");
-                        AddFeBase(analysisElement, feBase, analysis);
-
-                        counter = 0;
                         break;
                     } else
                     {
                         counter++;
+                    }
+                }
+
+                if (counter == analysis.elementList.Count)
+                {
+                    counter = 0;
+                    foreach (AnalysisElement analysisElement in analysis.elementList)
+                    {
+                        if ((analysisElement.actual > analysisElement.max) &&
+                            analysisElement.name.ToUpper() != "FE")
+                        {
+                            Alloy feBase = alloys.Find(a => a.name.ToUpper() == "FE-BASE");
+                            AddFeBase(analysisElement, feBase, analysis);
+
+                            counter = 0;
+                            break;
+                        }
+                        else
+                        {
+                            counter++;
+                        }
                     }
                 }
             }
@@ -389,7 +428,7 @@ namespace Steel_Analysis_API.Models
         {
             cnt = 0;
             Analysis temp = analysis.DeepCopy();
-            Analysis baseline = BeginCheapestCalculation(temp, alloys);
+            Analysis baseline = BeginCheapestCalculation(temp, alloys, 0.1);
             minPrice = baseline.TotalPrice;
             AddIron(analysis);
             List<Alloy> filtered = FilterAlloys(analysis, alloys);
@@ -415,6 +454,187 @@ namespace Steel_Analysis_API.Models
             return cheapest;
         }
 
+        public static Analysis AllCombinations(Analysis analysis, List<Alloy> alloys)
+        {
+            Analysis temp = analysis.DeepCopy();
+            Analysis baseline = BeginCheapestCalculation(temp, alloys, 0.1);
+            Analysis cheapest = null;
+            List<Analysis> analyses = new List<Analysis>();
+            List<int> starts = new List<int>() { 0 };
+            List<Alloy> added = new List<Alloy>();
+
+            AddIron(analysis);
+            int index = 0, count = 0, countToAdd = 0, amnt = 1;
+            double weight = 0.1;
+            temp = analysis.DeepCopy();
+            string print = "";
+            int c = 0;
+
+            while (true)
+            {
+                try
+                {
+                    if (count < starts.Count)
+                    {
+                        //Console.WriteLine("Index1: " + starts[count]);
+                        AddAlloyRec(temp, alloys[starts[count]], weight);
+                        print += alloys[starts[count]].name + " ";
+
+                    }
+                    else if (count <= countToAdd)
+                    {
+                        //Console.WriteLine("Index2: " + (index + amnt));
+                        AddAlloyRec(temp, alloys[index + amnt], weight);
+                        print += alloys[index + amnt].name + " ";
+
+                    }
+                    else
+                    {
+                        //Console.WriteLine("Index3: " + index);
+                        AddAlloyRec(temp, alloys[index], weight);
+                        print += alloys[index].name + " ";
+
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine(print);
+                    Console.WriteLine(index + " " + amnt);
+                    Console.WriteLine(starts[count]);
+                    break;
+                }
+
+                count++;
+
+                if (temp.weight >= temp.maxWeight || temp.TotalPrice >= baseline.TotalPrice + 10 || AnalysisFinished(temp))
+                {
+                    c++;
+                    //Console.WriteLine(print);
+                    print = "";
+
+                    if (AnalysisFinished(temp))
+                    {
+                        Console.WriteLine("Analysis finished!");
+                        analyses.Add(temp.DeepCopy());
+                    }
+
+                    temp = analysis.DeepCopy();
+
+                    if (countToAdd == count - 1)
+                    {
+                        countToAdd = 1;
+
+                        if (index + amnt == alloys.Count - 1)
+                        {
+                            index++;
+                            starts[starts.Count - 1]++;
+
+                            if (starts[starts.Count - 1] >= alloys.Count)
+                                starts[starts.Count - 1] = 0;
+
+                            amnt = 1;
+                            countToAdd = 0;
+                        }
+                        else if (index + amnt < alloys.Count)
+                            amnt++;
+                    }
+                    else
+                        countToAdd++;
+
+                    if (index >= alloys.Count - 1)
+                    {
+                        int length = starts.Count;
+
+                        if (length == 1)
+                            starts[0] = 0;
+                        else
+                            starts[length - 1] = starts[length - 2] + 1;
+
+                        starts.Add(length);
+                        if (starts[length - 1] == alloys.Count - 1)
+                            starts.Add(0);
+                        else
+                            starts.Add(starts[length - 1] + 1);
+
+                        index = count = countToAdd = 0;
+                        amnt = 1;
+
+                        if (starts.Count >= 100)
+                            break;
+
+                        continue;
+                    }
+
+                    count = 0;
+                }
+            }
+
+            /*while (true)
+            {
+                if (count < starts.Count)
+                {
+                    AddAlloyRec(temp, alloys[index + starts[count]], 1);
+                    print += alloys[index + starts[count]].name + " ";
+                }
+                else if (count <= countToAdd)
+                {
+                    AddAlloyRec(temp, alloys[index + amnt], 1);
+                    print += alloys[index + amnt].name + " ";
+                }
+                else
+                {
+                    AddAlloyRec(temp, alloys[index], 1);
+                    print += alloys[index].name + " ";
+                }
+
+                count++;
+
+                if (temp.weight >= temp.maxWeight || temp.TotalPrice >= baseline.TotalPrice || AnalysisFinished(temp))
+                {
+                    if (starts.Count > 1)
+                        Console.WriteLine(print);
+
+                    print = "";
+                    if (AnalysisFinished(temp))
+                        analyses.Add(temp.DeepCopy());
+
+                    temp = analysis.DeepCopy();
+
+                    if (index == alloys.Count - 1)
+                    {
+                        int length = starts.Count;
+                        starts.Add(length);
+                        index = count = countToAdd = 0;
+                        amnt = 1;
+
+                        if (starts.Count > 3)
+                            break;
+
+                        continue;
+                    }
+
+                    if (countToAdd == count - 1)
+                    {
+                        countToAdd = 1;
+
+                        if (index + amnt == alloys.Count - 1)
+                        {
+                            index++;
+                            amnt = 1;
+                            countToAdd = 0;
+                        }
+                        else if (index + amnt < alloys.Count)
+                            amnt++;
+                    }
+                    else
+                        countToAdd++;
+
+                    count = 0;
+                }
+            }*/
+
+            return baseline;
+        }
+
         private static bool AnalysisFinished(Analysis analysis)
         {
             foreach (AnalysisElement ae in analysis.elementList)
@@ -434,7 +654,7 @@ namespace Steel_Analysis_API.Models
             if (cnt % 1000000 == 0)
                 Console.WriteLine(cnt / 1000000);
 
-            List<ElementWithin> within = new List<ElementWithin>();
+            //List<ElementWithin> within = new List<ElementWithin>();
 
             foreach (AlloyElement alloyElement in alloy.ElementList)
             {
@@ -443,7 +663,7 @@ namespace Steel_Analysis_API.Models
 
                 if (ae != null)
                 {
-                    if (ae.name != "Fe")
+                    /*if (ae.name != "Fe")
                     {
                         int aboveOrBelow = 0;
 
@@ -452,7 +672,7 @@ namespace Steel_Analysis_API.Models
                         else if (ae.actual > ae.max)
                             aboveOrBelow = 1000;
                         within.Add(new ElementWithin(ae.name, (ae.actual >= ae.min && ae.actual <= ae.max), aboveOrBelow));
-                    }
+                    }*/
 
                     ae.weight += weightToAdd * alloyElement.value;
                 }
@@ -462,7 +682,7 @@ namespace Steel_Analysis_API.Models
                 ae.actual = ae.weight / analysis.weight;
 
 
-            if (weightToAdd == 1)
+            /*if (weightToAdd == 1)
             {
                 foreach (ElementWithin ew in within)
                 {
@@ -493,7 +713,7 @@ namespace Steel_Analysis_API.Models
                         }
                     }
                 }
-            }
+            }*/
 
             AddedAlloy addedAlloy = analysis.addedAlloys.Find(aa => aa.name == alloy.name);
 
@@ -532,7 +752,7 @@ namespace Steel_Analysis_API.Models
                     AddAlloyRec(analysis, alloy, 1);
                 else
                     continue;*/
-                AddAlloyRec(analysis, alloy, 10);
+                AddAlloyRec(analysis, alloy, 0.1);
 
                 for (int j = i; j < alloys.Count; j++)
                     remaining.Add(alloys[j]);
@@ -569,12 +789,15 @@ namespace Steel_Analysis_API.Models
             return false;
         }
 
-        private static double CalculatePoints(Analysis temp, Analysis original, Alloy alloy, AnalysisElement analysisElement)
+        private static double CalculatePoints(Analysis temp, Analysis original, Alloy alloy, AnalysisElement analysisElement, List<Alloy> alloys)
         {
             double points = 0;
 
             for (int i = 0; i < alloy.ElementList.Count; i++)
             {
+                if (alloy.ElementList[i].name.ToUpper() == "FE")
+                    continue;
+
                 AnalysisElement tempElement = temp.elementList.Find(e => e.name == alloy.ElementList[i].name);
                 AnalysisElement originalElement = original.elementList.Find(e => e.name == alloy.ElementList[i].name);
 
@@ -584,18 +807,28 @@ namespace Steel_Analysis_API.Models
                 }
 
                 double magnitude = 1;
+                double tempDistance = 0, originalDistance = 0;
 
                 if (tempElement.actual < tempElement.min)
                 {
                     magnitude = tempElement.min / tempElement.actual;
+                    tempDistance = tempElement.min - tempElement.actual;
                 }
                 else if (tempElement.actual > tempElement.max)
                 {
                     magnitude = tempElement.actual / tempElement.max;
+                    tempDistance = tempElement.actual - tempElement.max;
+                } else
+                {
+                    tempDistance = tempElement.actual < tempElement.aim ? tempElement.aim - tempElement.actual : tempElement.actual - tempElement.aim;
                 }
 
-                double tempDistance = tempElement.actual < tempElement.aim ? tempElement.aim - tempElement.actual : tempElement.actual - tempElement.aim;
-                double originalDistance = originalElement.actual < originalElement.aim ? originalElement.aim - originalElement.actual : originalElement.actual - originalElement.aim;
+                if (originalElement.actual < originalElement.min)
+                    originalDistance = originalElement.min - originalElement.actual;
+                else if (originalElement.actual > originalElement.max)
+                    originalDistance = originalElement.actual - originalElement.max;
+                else
+                    originalDistance = originalElement.actual < originalElement.aim ? originalElement.aim - originalElement.actual : originalElement.actual - originalElement.aim;
 
                 //Console.WriteLine(alloy.name + "::" + tempElement.name + "    " + tempDistance + " :: " + originalDistance);
 
@@ -604,25 +837,27 @@ namespace Steel_Analysis_API.Models
                     points += tempDistance;
                 } else if (tempDistance > originalDistance && tempElement.name == analysisElement.name)
                 {
-                    return Double.MaxValue;
+                    points += tempDistance * 2;
                 } else if (tempDistance == originalDistance)
                 {
-                    points += 10;
+                    points += 1;
                 } else
                 {
                     points += (1 / tempDistance) * magnitude;
                 }
 
-                /*if (tempElement.actual < tempElement.min || tempElement.actual > tempElement.max)
-                {
-                    //points += 10 * (tempDistance * 100);
-                    return Double.MaxValue;
-                }*/
-
                 points *= magnitude;
             }
 
-            return points * (alloy.price * (temp.weight - original.weight));
+            return points * PriceMagnitude(analysisElement, alloy);
+            //return points * (alloy.price * (temp.weight - original.weight));
+        }
+
+        private static double PriceMagnitude(AnalysisElement element, Alloy alloy)
+        {
+            AlloyElement alloyElement = alloy.ElementList.Find(e => e.name == element.name);
+
+            return alloy.price / alloyElement.value;
         }
 
         public static Analysis BeginSimpleCalculation(Analysis analysis, List<Alloy> alloys)
@@ -640,7 +875,7 @@ namespace Steel_Analysis_API.Models
                         {
                             if (a.ElementList.Any(ae => ae.name == e.name))
                             {
-                                AddAlloy(a, e, analysis);
+                                AddAlloy(a, e, analysis, 0.1);
                                 break;
                             }
                         }

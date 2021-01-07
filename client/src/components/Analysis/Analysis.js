@@ -43,7 +43,7 @@ export default function Analysis () {
   return (
     <div id='main-analysis-container'>
       <div id='options-container'>
-        <h3>Existing analysis</h3>
+        <h3>Existing analyses</h3>
         <Link to='/analysis/add'>Add analysis</Link>
       </div>
       <div id='steelgrade-information-container'>
