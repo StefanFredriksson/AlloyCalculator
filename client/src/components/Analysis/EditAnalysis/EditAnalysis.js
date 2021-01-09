@@ -95,7 +95,7 @@ class EditAnalysis extends Component {
 
     if (analysis.steelgrade === this.state.steelgrade.name) {
       for (let i = 0; i < actuals.length; i++) {
-        actuals[i].value = (analysis.elementList[i].actual * 100).toFixed(2)
+        actuals[i].value = +(analysis.elementList[i].actual * 100).toFixed(2)
       }
     } else {
       for (const actual of actuals) {
@@ -276,13 +276,13 @@ class EditAnalysis extends Component {
                       />
                     </td>
                     <td>
-                      <span className='min'>{(e.min * 100).toFixed(2)}</span>%
+                      <span className='min'>{+(e.min * 100).toFixed(2)}</span>%
                     </td>
                     <td>
-                      <span className='aim'>{(e.aim * 100).toFixed(2)}</span>%
+                      <span className='aim'>{+(e.aim * 100).toFixed(2)}</span>%
                     </td>
                     <td>
-                      <span className='max'>{(e.max * 100).toFixed(2)}</span>%
+                      <span className='max'>{+(e.max * 100).toFixed(2)}</span>%
                     </td>
                   </tr>
                 )

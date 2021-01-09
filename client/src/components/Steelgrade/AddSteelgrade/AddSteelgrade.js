@@ -41,9 +41,9 @@ export default class AddSteelgrade extends Component {
 
     for (let i = 0; i < elements.length; i++) {
       names[i].value = elements[i].name
-      mins[i].value = (elements[i].min * 100).toFixed(2)
-      aims[i].value = (elements[i].aim * 100).toFixed(2)
-      maxs[i].value = (elements[i].max * 100).toFixed(2)
+      mins[i].value = +(elements[i].min * 100).toFixed(2)
+      aims[i].value = +(elements[i].aim * 100).toFixed(2)
+      maxs[i].value = +(elements[i].max * 100).toFixed(2)
       btns[i].value = elements[i].name
     }
   }

@@ -11,9 +11,9 @@ export default function Element (props) {
         className='analysis-element'
         placeholder='Enter current analysis'
       />
-      <label>Min: {(props.element.min * 100).toFixed(2)}%</label>
-      <label>Aim: {(props.element.aim * 100).toFixed(2)}%</label>
-      <label>Max: {(props.element.max * 100).toFixed(2)}%</label>
+      <label>Min: {+(props.element.min * 100).toFixed(2)}%</label>
+      <label>Aim: {+(props.element.aim * 100).toFixed(2)}%</label>
+      <label>Max: {+(props.element.max * 100).toFixed(2)}%</label>
     </div>
   )
 }

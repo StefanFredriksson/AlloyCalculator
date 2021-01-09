@@ -218,13 +218,13 @@ export default class AddAnalysis extends Component {
                       />
                     </td>
                     <td>
-                      <span className='min'>{(e.min * 100).toFixed(2)}</span>%
+                      <span className='min'>{+(e.min * 100).toFixed(2)}</span>%
                     </td>
                     <td>
-                      <span className='aim'>{(e.aim * 100).toFixed(2)}</span>%
+                      <span className='aim'>{+(e.aim * 100).toFixed(2)}</span>%
                     </td>
                     <td>
-                      <span className='max'>{(e.max * 100).toFixed(2)}</span>%
+                      <span className='max'>{+(e.max * 100).toFixed(2)}</span>%
                     </td>
                   </tr>
                 )

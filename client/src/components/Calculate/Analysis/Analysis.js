@@ -9,10 +9,7 @@ export default function Analysis (props) {
       <label>Steelgrade: {props.analysis.steelgrade}</label>
       <label>
         Weight:{' '}
-        {props.analysis.weight
-          .toFixed(1)
-          .toString()
-          .replace(regex, ' ')}
+        {(+props.analysis.weight.toFixed(1)).toString().replace(regex, ' ')}
         kg
       </label>
       <label>
@@ -36,11 +33,11 @@ export default function Analysis (props) {
                 <tr>
                   <td>{e.name}</td>
                   <td className='actual-analysis'>
-                    {(e.actual * 100).toFixed(2)}%
+                    {+(e.actual * 100).toFixed(2)}%
                   </td>
-                  <td>{(e.min * 100).toFixed(2)}%</td>
-                  <td>{(e.aim * 100).toFixed(2)}%</td>
-                  <td>{(e.max * 100).toFixed(2)}%</td>
+                  <td>{+(e.min * 100).toFixed(2)}%</td>
+                  <td>{+(e.aim * 100).toFixed(2)}%</td>
+                  <td>{+(e.max * 100).toFixed(2)}%</td>
                 </tr>
               )
             })}

@@ -3,6 +3,7 @@ import './Calculate.css'
 import { HostContext } from '../../Store'
 import Analysis from './Analysis/Analysis'
 import FlashMessage from '../Common/FlashMessage'
+import Loader from '../Common/Loader'
 const regex = /\B(?=(\d{3})+(?!\d))/g
 
 export default class Calculate extends Component {
@@ -81,11 +82,16 @@ export default class Calculate extends Component {
         TotalPrice: 0
       }
     })
+    document.querySelector('#hide-container').style.display = 'none'
+    document.querySelector('.loader-container').style.display = 'flex'
     this.handleFlashMessage('', false, false)
   }
 
   beginCalculation (event) {
     const [host] = this.context
+    document.querySelector('.loader-container').style.display = 'flex'
+    document.querySelector('.loader').style.display = 'flex'
+    document.querySelector('#hide-container').style.display = 'none'
 
     window
       .fetch(
@@ -95,6 +101,9 @@ export default class Calculate extends Component {
         if (response.ok) {
           response.json().then(data => {
             this.setState({ finalAnalysis: { ...data } })
+            document.querySelector('.loader-container').style.display = 'none'
+            document.querySelector('.loader').style.display = 'none'
+            document.querySelector('#hide-container').style.display = 'flex'
 
             if (data.weight > data.maxWeight) {
               this.handleFlashMessage(
@@ -133,61 +142,64 @@ export default class Calculate extends Component {
         </div>
         <div id='result-container'>
           <Analysis analysis={this.state.analysis} title='Original Analysis' />
-          <div className='analysis-container'>
-            <h3>Alloys to add</h3>
-            <label>
-              Total weight added:{' '}
-              {(this.state.finalAnalysis.weight - this.state.analysis.weight)
-                .toFixed(1)
-                .toString()
-                .replace(regex, ' ')}
-              kg
-            </label>
-            <label>
-              Total price:{' '}
-              {this.state.finalAnalysis.TotalPrice.toFixed(2)
-                .toString()
-                .replace(regex, ' ')}
-              kr
-            </label>
-            <div className='element-table alloy-element-table'>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Weight</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.finalAnalysis.addedAlloys.map(a => {
-                    return (
-                      <tr>
-                        <td>{a.name}</td>
-                        <td>
-                          {a.Weight.toFixed(1)
-                            .toString()
-                            .replace(regex, ' ')}
-                          kg
-                        </td>
-                        <td>
-                          {(a.price * a.Weight)
-                            .toFixed(2)
-                            .toString()
-                            .replace(regex, ' ')}
-                          kr
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+          <Loader />
+          <div id='hide-container'>
+            <div className='analysis-container'>
+              <h3>Alloys to add</h3>
+              <label>
+                Total weight added:{' '}
+                {(+(
+                  this.state.finalAnalysis.weight - this.state.analysis.weight
+                ).toFixed(1))
+                  .toString()
+                  .replace(regex, ' ')}
+                kg
+              </label>
+              <label>
+                Total price:{' '}
+                {(+this.state.finalAnalysis.TotalPrice.toFixed(2))
+                  .toString()
+                  .replace(regex, ' ')}
+                kr
+              </label>
+              <div className='element-table alloy-element-table'>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Weight</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.finalAnalysis.addedAlloys.map(a => {
+                      return (
+                        <tr>
+                          <td>{a.name}</td>
+                          <td>
+                            {(+a.Weight.toFixed(1))
+                              .toString()
+                              .replace(regex, ' ')}
+                            kg
+                          </td>
+                          <td>
+                            {(+(a.price * a.Weight).toFixed(2))
+                              .toString()
+                              .replace(regex, ' ')}
+                            kr
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
+            <Analysis
+              analysis={this.state.finalAnalysis}
+              title='Final Analysis'
+            />
           </div>
-          <Analysis
-            analysis={this.state.finalAnalysis}
-            title='Final Analysis'
-          />
         </div>
       </div>
     )

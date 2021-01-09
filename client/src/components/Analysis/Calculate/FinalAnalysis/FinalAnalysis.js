@@ -23,10 +23,10 @@ export default function FinalAnalysis (props) {
             return (
               <tr>
                 <td>{a.name}</td>
-                <td>{(a.actual * 100).toFixed(2)}%</td>
-                <td>{(a.min * 100).toFixed(2)}%</td>
-                <td>{(a.aim * 100).toFixed(2)}%</td>
-                <td>{(a.max * 100).toFixed(2)}%</td>
+                <td>{+(a.actual * 100).toFixed(2)}%</td>
+                <td>{+(a.min * 100).toFixed(2)}%</td>
+                <td>{+(a.aim * 100).toFixed(2)}%</td>
+                <td>{+(a.max * 100).toFixed(2)}%</td>
                 <td>
                   {a.weight
                     .toFixed(1)

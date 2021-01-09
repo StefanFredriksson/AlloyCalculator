@@ -83,7 +83,7 @@ class EditAlloy extends Component {
 
     for (let i = 0; i < e.length; i++) {
       names[i].value = e[i].name
-      values[i].value = e[i].value * 100
+      values[i].value = +(e[i].value * 100).toFixed(3)
       btns[i].value = e[i].name
     }
   }

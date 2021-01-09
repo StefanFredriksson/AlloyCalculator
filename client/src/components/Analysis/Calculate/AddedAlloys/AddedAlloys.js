@@ -21,15 +21,19 @@ export default function AddedAlloys (props) {
               <tr>
                 <td>{al.name}</td>
                 <td>
-                  {al.Weight.toFixed(2)
-                    .toString()
-                    .replace(regex, ' ')}
+                  {
+                    +al.Weight.toFixed(2)
+                      .toString()
+                      .replace(regex, ' ')
+                  }
                   kg{' '}
                 </td>
                 <td>
-                  {al.TotalPrice.toFixed(2)
-                    .toString()
-                    .replace(regex, ' ')}
+                  {
+                    +al.TotalPrice.toFixed(2)
+                      .toString()
+                      .replace(regex, ' ')
+                  }
                   kr
                 </td>
               </tr>

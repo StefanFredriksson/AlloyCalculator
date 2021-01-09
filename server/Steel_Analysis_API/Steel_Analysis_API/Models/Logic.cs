@@ -427,12 +427,58 @@ namespace Steel_Analysis_API.Models
         public static Analysis CalculateUsingAllCombinations(Analysis analysis, List<Alloy> alloys)
         {
             cnt = 0;
+            triedAnalysis = new List<Analysis>();
             Analysis temp = analysis.DeepCopy();
-            Analysis baseline = BeginCheapestCalculation(temp, alloys, 0.1);
+            Analysis baseline = BeginMultipleCheapestCalculations(temp, alloys);
+
+            if (!AnalysisFinished(baseline))
+                return baseline;
+
             minPrice = baseline.TotalPrice;
+            Console.WriteLine("Baseline: " + minPrice);
             AddIron(analysis);
+            /*List<ElementAlloys> elementAlloys = new List<ElementAlloys>();
+
+            foreach (AnalysisElement element in analysis.elementList)
+            {
+                ElementAlloys elementAlloy = new ElementAlloys(element.name);
+
+                foreach (Alloy alloy in alloys)
+                {
+                    double mag = PriceMagnitude(element, alloy);
+
+                    if (ComparePriceMagnitude(element, alloys, mag))
+                        elementAlloy.alloys.Add(alloy);
+                }
+
+                elementAlloys.Add(elementAlloy);
+            }*/
+
+            /*foreach (ElementAlloys ea in elementAlloys)
+            {
+                Console.WriteLine(ea.name);
+                string print = "";
+
+                foreach (Alloy alloy in ea.alloys)
+                    print += $"{alloy.name}, ";
+
+                Console.WriteLine(print);
+                Console.WriteLine("----------------------");
+            }*/
+
             List<Alloy> filtered = FilterAlloys(analysis, alloys);
-            RecursiveCalc(analysis, alloys);
+
+            double weight = 1;
+
+            while (weight >= 0.5)
+            {
+                Analysis tempAnalysis = analysis.DeepCopy();
+                RecursiveCalc(tempAnalysis, alloys, weight);
+                Console.WriteLine("Done with weight: " + weight);
+                weight -= 0.1;
+            }
+
+            //RecursiveCalc(analysis, alloys, 0.5);
             double min = Double.MaxValue;
             Analysis cheapest = null;
 
@@ -728,9 +774,11 @@ namespace Steel_Analysis_API.Models
             }
         }
 
-        private static void RecursiveCalc(Analysis analysis, List<Alloy> alloys)
+        static double weightToAddRec = 1;
+
+        private static void RecursiveCalc(Analysis analysis, List<Alloy> alloys, double weight)
         {
-            //Console.WriteLine($"Weight: {analysis.weight}\t Max weight: {analysis.maxWeight}");
+            //Console.WriteLine($"Weight: {analysis.weight}\t Price: {analysis.TotalPrice}");
             if (AnalysisFinished(analysis))
             {
                 if (analysis.TotalPrice < minPrice)
@@ -741,28 +789,32 @@ namespace Steel_Analysis_API.Models
             }
 
             if (analysis.weight >= analysis.maxWeight || analysis.TotalPrice > minPrice)
+            {
                 return;
+            }
 
             for (int i = 0; i < alloys.Count; i++)
             {
                 List<Alloy> remaining = new List<Alloy>();
                 Alloy alloy = alloys[i];
 
-                /*if ((alloy.name != "Fe-base" && AllowMin(analysis, alloy)) || (alloy.name == "Fe-base" && AllowMax(analysis)))
-                    AddAlloyRec(analysis, alloy, 1);
+                if ((alloy.name != "Fe-base" && AllowMin(analysis, alloy, alloys)) || (alloy.name == "Fe-base" && AllowMax(analysis)))
+                {
+                    AddAlloyRec(analysis, alloy, weight);
+                }
                 else
-                    continue;*/
-                AddAlloyRec(analysis, alloy, 0.1);
+                    continue;
+                //AddAlloyRec(analysis, alloy, weight);
 
                 for (int j = i; j < alloys.Count; j++)
                     remaining.Add(alloys[j]);
 
                 Analysis analysis_rec = analysis.DeepCopy();
-                RecursiveCalc(analysis_rec, remaining);
+                RecursiveCalc(analysis_rec, remaining, weight);
             }
         }
 
-        private static bool AllowMin(Analysis analysis, Alloy alloy)
+        private static bool AllowMin(Analysis analysis, Alloy alloy, List<Alloy> alloys)
         {
             foreach (AlloyElement alloyElement in alloy.ElementList)
             {
@@ -772,7 +824,12 @@ namespace Steel_Analysis_API.Models
                 AnalysisElement analysisElement = analysis.elementList.Find(element => element.name == alloyElement.name);
 
                 if (analysisElement != null && analysisElement.actual < analysisElement.min)
-                    return true;
+                {
+                    double mag = PriceMagnitude(analysisElement, alloy);
+
+                    if (ComparePriceMagnitude(analysisElement, alloys, mag))
+                        return true;
+                }
             }
 
             return false;
@@ -853,11 +910,29 @@ namespace Steel_Analysis_API.Models
             //return points * (alloy.price * (temp.weight - original.weight));
         }
 
+        private static bool ComparePriceMagnitude(AnalysisElement element, List<Alloy> alloys, double magnitude)
+        {
+            double mag = 0, bestMag = double.MaxValue;
+
+            foreach (Alloy alloy in alloys)
+            {
+                mag = PriceMagnitude(element, alloy);
+
+                if (mag < bestMag)
+                    bestMag = mag;
+            }
+
+            return magnitude / bestMag < 10;
+        }
+
         private static double PriceMagnitude(AnalysisElement element, Alloy alloy)
         {
             AlloyElement alloyElement = alloy.ElementList.Find(e => e.name == element.name);
 
-            return alloy.price / alloyElement.value;
+            if (alloyElement == null)
+                return double.MaxValue;
+            else
+                return alloy.price / alloyElement.value;
         }
 
         public static Analysis BeginSimpleCalculation(Analysis analysis, List<Alloy> alloys)

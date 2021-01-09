@@ -70,9 +70,9 @@ class EditSteelgrade extends Component {
 
     for (let i = 0; i < steelgrade.elementList.length; i++) {
       names[i].value = steelgrade.elementList[i].name
-      mins[i].value = (steelgrade.elementList[i].min * 100).toFixed(2)
-      aims[i].value = (steelgrade.elementList[i].aim * 100).toFixed(2)
-      maxs[i].value = (steelgrade.elementList[i].max * 100).toFixed(2)
+      mins[i].value = +(steelgrade.elementList[i].min * 100).toFixed(2)
+      aims[i].value = +(steelgrade.elementList[i].aim * 100).toFixed(2)
+      maxs[i].value = +(steelgrade.elementList[i].max * 100).toFixed(2)
       btns[i].value = steelgrade.elementList[i].name
     }
   }

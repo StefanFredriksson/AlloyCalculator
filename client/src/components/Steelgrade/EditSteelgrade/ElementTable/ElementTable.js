@@ -9,9 +9,9 @@ export default function ElementTable (props) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Min</th>
-            <th>Aim</th>
-            <th>Max</th>
+            <th>Min (%)</th>
+            <th>Aim (%)</th>
+            <th>Max (%)</th>
           </tr>
         </thead>
         <tbody>
